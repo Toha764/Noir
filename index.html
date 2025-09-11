@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noir</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- theme --- */
+        body { 
+            font-family: 'Roboto Mono', monospace;
+            background-color: #0A0A0A;
+        }
+        .font-sans { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'Roboto Mono', monospace; }
+
+        /* --- title bar --- */
+        #title-bar {
+            -webkit-app-region: drag;
+        }
+        .title-bar-btn {
+            -webkit-app-region: no-drag;
+            width: 46px; 
+            height: 100%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            color: #d1d5db;
+            transition: all 0.15s ease-in-out; 
+        }
+        
+        .title-bar-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        #close-btn:hover {
+            background-color: #e53e3e; 
+        }
+
+
+        .calendar-grid { 
+            display: grid; 
+            grid-template-columns: repeat(7, minmax(0, 1fr)); 
+            grid-auto-rows: minmax(110px, 1fr);
+            gap: 8px; 
+            flex-grow: 1;
+        }
+        .calendar-day {
+            display: flex; flex-direction: column; align-items: flex-start;
+            padding: 4px 8px; border: 1px solid #374151; border-radius: 0.375rem;
+            position: relative; transition: all 0.2s ease-in-out;
+        }
+        .calendar-day:hover { border-color: #6b7280; }
+        .calendar-day.selected { border-color: white !important; }
+        .reminder-dot {
+            position: absolute; top: 6px; right: 6px;
+            width: 8px; height: 8px; background-color: white;
+            border-radius: 9999px; border: 1px solid #111111;
+        }
+        .day-number {
+            font-weight: 400; width: 24px; height: 24px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 9999px; margin-bottom: 4px; flex-shrink: 0;
+        }
+        .calendar-day.today .day-number { 
+            background-color: transparent; color: white; border: 1px solid white;
+        }
+        .note-title {
+            font-size: 0.75rem; line-height: 1.2; overflow: hidden;
+            display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;   /* bug1 */
+            color: #9ca3af; word-break: break-word;
+        }  
+        
+        .loader {
+            border: 4px solid #4b5563; border-top: 4px solid #ffffff;
+            animation: spin 1s linear infinite; border-radius: 50%; width: 24px; height: 24px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* markdown */
+        .markdown-body h1 { font-size: 1.875rem; font-weight: 700; margin: 1em 0 0.5em; color: white; }
+        .markdown-body h2 { font-size: 1.5rem; font-weight: 700; margin: 1em 0 0.5em; color: white; }
+        .markdown-body h3 { font-size: 1.25rem; font-weight: 700; margin: 1em 0 0.5em; color: white; }
+        .markdown-body a { color: white; text-decoration: underline; }
+        .markdown-body blockquote { border-left-color: #6b7280; color: #9ca3af; padding-left: 1rem; margin: 1em 0; }
+        .markdown-body code { background-color: #374151; padding: 2px 4px; border-radius: 4px; }
+        .markdown-body > *:first-child { margin-top: 0; }
+        .markdown-body > *:last-child { margin-bottom: 0; }
+
+        .icon-btn {
+            background-color: transparent; color: #d1d5db; border: 1px solid #374151;
+            width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 0.375rem;
+        }
+        .icon-btn:hover { background-color: #1f2937; border-color: #6b7280;}
+        .icon-btn.active { background-color: #374151; border-color: white; }
+
+        /* modal styles */
+        .modal-content { background-color: #0A0A0A; border: 1px solid #4a5568; }
+        .input-base { background-color: #1f2937; border: 1px solid #374151; }
+        .btn-secondary { background-color: #374151; }
+        .btn-secondary:hover { background-color: #4b5563; }
+        .btn-primary { background-color: #1f2937; border: 1px solid #6b7280; }
+        .btn-primary:hover { background-color: white; color: black; }
+    </style>
+</head>
+<body class="text-gray-200 h-screen overflow-hidden flex flex-col">
+
+<div id="title-bar" class="h-8 w-full flex-shrink-0 flex items-center">
+
+    <!-- app title & icon -->
+    <img src="noir_app_icon.png" class="h-4 w-4 mr-2 pl-1" alt="App Icon">
+    <div id="title-bar-text" class="pr-2 text-sm text-gray-400 flex-grow"> </div>
+    <!-- window controls -->
+    <div class="flex-shrink-0">
+            <!-- Minimize Button -->
+            <button id="minimize-btn" title="Minimize" class="title-bar-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M2 8a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11A.5.5 0 0 1 2 8Z"/>
+                </svg>
+            </button>
+            <!-- Maximize Button -->
+            <button id="maximize-btn" title="Maximize" class="title-bar-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                   <path d="M3 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-8zM4 4v7h7V4H4z"/>
+                </svg>
+            </button>
+            <!-- Close Button -->
+            <button id="close-btn" title="Close" class="title-bar-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                   <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+    
+    <!-- main app ui -->
+    <div class="flex flex-grow h-full overflow-hidden">
+        <!-- Left Panel: Calendar -->
+        <div id="left-panel" class="w-1/3 p-4 border-r border-gray-700 flex flex-col transition-all duration-300 ease-in-out">
+            <div class="flex items-center justify-between my-4">
+                <button id="prev-month" class="p-2 rounded-md hover:bg-gray-700">&lt;</button>
+                <h2 id="month-year" class="font-bold text-lg uppercase tracking-widest"></h2>
+                <button id="jump-today-btn" title="Jump to Today" class="p-2 rounded-md hover:bg-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                </button>
+                <button id="next-month" class="p-2 rounded-md hover:bg-gray-600">&gt;</button>
+            </div>
+            <div class="grid grid-cols-7 text-center font-semibold text-sm text-gray-400 mb-2">
+                <div>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div>
+            </div>
+            <div id="calendar-body" class="calendar-grid"></div>
+        </div>
+
+        <!-- Right Panel: Editor & Preview -->
+        <div id="right-panel" class="w-2/3 p-6 flex flex-col relative transition-all duration-300 ease-in-out">
+            <div class="flex justify-between items-start mb-4">
+                <h1 id="note-date-title" class="text-2xl font-bold text-white uppercase tracking-widest"></h1>
+                <div class="flex items-center space-x-2">
+                    <div id="ai-loader" class="loader hidden"></div>
+                    <button id="toggle-calendar-btn" title="Toggle Calendar (Ctrl+B)" class="icon-btn active"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg></button>
+                    <button id="view-toggle" title="Toggle Preview (Ctrl+P)" class="icon-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+                    <button id="reminder-btn" title="Set a Reminder (Ctrl+R)" class="icon-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></button>
+                    <button id="quiz-btn" title="Generate a Quiz (Ctrl+Q)" class="icon-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></button>
+                    <button id="delete-btn" title="Delete Note (Ctrl+D)" class="icon-btn hover:border-red-500"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
+                    <button id="settings-btn" title="Settings (Ctrl+,)" class="icon-btn">⚙️</button>
+                    <button id="info-btn" title="Info (Ctrl+I)" class="icon-btn">i</button>
+                </div>
+            </div>
+            <div id="editor-container" class="flex-grow h-full min-h-0">
+                <textarea id="note-editor" class="w-full h-full p-4 bg-transparent border border-gray-700 rounded-lg text-lg leading-relaxed focus:ring-1 focus:ring-white focus:outline-none resize-none" placeholder="Write Today's Note"></textarea>
+                <div id="preview-pane" class="w-full h-full p-4 bg-transparent border border-gray-700 rounded-lg text-lg leading-relaxed overflow-y-auto hidden markdown-body"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- modals -->
+    <div id="settings-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div class="modal-content p-8 rounded-lg shadow-xl max-w-2xl w-full">
+            <h2 class="text-2xl font-bold text-white mb-6 uppercase tracking-widest">Settings</h2>
+            <div class="space-y-6">
+                <div>
+                    <label for="api-key" class="block mb-2 font-semibold uppercase text-xs tracking-wider">Gemini API Key</label>
+                    <input type="password" id="api-key" class="input-base w-full p-2 rounded-md">
+                </div>
+                <div>
+                    <label for="quiz-prompt" class="block mb-2 font-semibold uppercase text-xs tracking-wider">"Quiz Me" Custom Prompt</label>
+                    <textarea id="quiz-prompt" rows="6" class="input-base w-full p-2 rounded-md"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="font-size-select" class="block mb-2 font-semibold uppercase text-xs tracking-wider">Font Size</label>
+                        <select id="font-size-select" class="input-base w-full p-2 rounded-md">
+                            <option value="sm">Small</option>
+                            <option value="base">Medium</option>
+                            <option value="lg">Large</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="font-family-select" class="block mb-2 font-semibold uppercase text-xs tracking-wider">Font Family</label>
+                        <select id="font-family-select" class="input-base w-full p-2 rounded-md">
+                            <option value="mono">Monospace</option>
+                            <option value="sans">Sans-Serif</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-4 mt-8">
+                <button id="cancel-settings" class="btn-secondary px-4 py-2 rounded-md">Cancel</button>
+                <button id="save-settings" class="btn-primary px-4 py-2 rounded-md">Save</button>
+            </div>
+        </div>
+    </div>
+    <div id="delete-confirm-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div class="modal-content p-8 rounded-lg shadow-xl max-w-sm w-full">
+             <h2 class="text-xl font-bold text-white mb-4 uppercase tracking-widest">Delete Note</h2>
+             <p class="text-gray-300 mb-6">Are you sure? This action cannot be undone.</p>
+             <div class="flex justify-end space-x-4">
+                 <button id="cancel-delete" class="btn-secondary px-4 py-2 rounded-md">Cancel</button>
+                 <button id="confirm-delete" class="btn-primary hover:border-red-500 px-4 py-2 rounded-md">Delete</button>
+             </div>
+         </div>
+     </div>
+     <div id="reminder-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+         <div class="modal-content p-8 rounded-lg shadow-xl max-w-sm w-full">
+             <h2 class="text-2xl font-bold text-white mb-4 uppercase tracking-widest">Set Reminder</h2>
+             <p class="mb-2 text-gray-300">Remind me to review this note in how many days?</p>
+             <input id="reminder-time" type="number" class="input-base w-full p-2 rounded-md" value="7">
+             <div class="flex justify-end space-x-4 mt-6">
+                 <button id="cancel-reminder" class="btn-secondary px-4 py-2 rounded-md">Cancel</button>
+                 <button id="confirm-reminder" class="btn-primary px-4 py-2 rounded-md">Set</button>
+             </div>
+         </div>
+     </div>
+     <div id="quiz-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div class="modal-content p-8 rounded-lg shadow-xl max-w-lg w-full">
+            <h2 class="text-2xl font-bold text-white mb-4 uppercase tracking-widest">Active Recall Quiz</h2>
+            <div id="quiz-content" class="text-lg leading-relaxed max-h-96 overflow-y-auto markdown-body"></div>
+            <div class="flex justify-end space-x-4 mt-6">
+                <button id="close-quiz-modal" class="btn-secondary px-4 py-2 rounded-md">Close</button>
+            </div>
+        </div>
+    </div>
+    <div id="info-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div class="modal-content p-8 rounded-lg shadow-xl max-w-lg w-full">
+            <h2 class="text-2xl font-bold text-white mb-4 uppercase tracking-widest">Hotkeys</h2>
+            <ul class="list-disc list-inside space-y-2 text-gray-300">
+                <li><b>Paste Highlighted Text:</b> <code>Ctrl + Shift + C</code></li>
+                <li><b>Toggle Calendar:</b> <code>Ctrl + B</code></li>
+                <li><b>Delete Note:</b> <code>Ctrl + D</code></li>
+                <li><b>Toggle Preview:</b> <code>Ctrl + P</code></li>
+                <li><b>Quiz Me:</b> <code>Ctrl + Q</code></li>
+                <li><b>Set Reminder:</b> <code>Ctrl + R</code></li>
+                <li><b>Settings:</b> <code>Ctrl + ,</code></li>
+            </ul>
+            <div class="flex justify-end space-x-4 mt-6">
+                <button id="close-info-modal" class="btn-primary px-4 py-2 rounded-md">Got it!</button>
+            </div>
+        </div>
+    </div>
+    <div id="startup-reminder-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div class="modal-content p-8 rounded-lg shadow-xl max-w-lg w-full">
+            <h2 class="text-2xl font-bold text-white mb-4 uppercase tracking-widest">Reminders Due</h2>
+            <p class="text-gray-400 mb-6">The following notes are due for review:</p>
+            <div id="due-reminders-list" class="space-y-2 max-h-64 overflow-y-auto"></div>
+            <div class="flex justify-end space-x-4 mt-6">
+                <button id="close-startup-reminder" class="btn-primary px-4 py-2 rounded-md">Got it!</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof window.electronAPI === 'undefined') {
+                document.body.innerHTML = `<div class="bg-black text-red-400 p-8 h-screen"><h1 class="text-2xl">Application Failed to Load</h1><p>Please run the app using 'npm start'.</p></div>`;
+                return;
+            }
+
+            // --- App State & DOM Elements ---
+            let currentDate = new Date();
+            let selectedDate = new Date();
+            let saveTimeout;
+            let userSettings = {};
+            const noteEditorEl = document.getElementById('note-editor');
+            const previewPane = document.getElementById('preview-pane');
+            const noteTitleEl = document.getElementById('note-date-title');
+            const monthYearEl = document.getElementById('month-year');
+            const calendarBodyEl = document.getElementById('calendar-body');
+            const leftPanel = document.getElementById('left-panel');
+            const rightPanel = document.getElementById('right-panel');
+            const toggleCalendarBtn = document.getElementById('toggle-calendar-btn');
+            const aiLoader = document.getElementById('ai-loader');
+            const quizBtn = document.getElementById('quiz-btn');
+            const prevMonthBtn = document.getElementById('prev-month');
+            const nextMonthBtn = document.getElementById('next-month');
+            const jumpTodayBtn = document.getElementById('jump-today-btn');
+
+            // --- Utility ---
+            const toISODateString = (date) => {
+                const year = date.getFullYear();
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const day = date.getDate().toString().padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+            
+            // --- Font Settings ---
+            const applyFontSettings = (settings) => {
+                const fontSize = settings.fontSize || 'base';
+                const fontFamily = settings.fontFamily || 'mono';
+                const elementsToStyle = [noteEditorEl, previewPane];
+                elementsToStyle.forEach(el => {
+                    el.classList.remove('text-sm', 'text-base', 'text-lg', 'font-mono', 'font-sans');
+                    el.classList.add(`text-${fontSize}`, `font-${fontFamily}`);
+                });
+                document.getElementById('font-size-select').value = fontSize;
+                document.getElementById('font-family-select').value = fontFamily;
+                // document.body.className = `text-gray-200 flex h-screen overflow-hidden font-${fontFamily}`;
+            };
+
+            // --- Settings ---
+            const loadAndApplySettings = async () => {
+                userSettings = await window.electronAPI.getSettings();
+                document.getElementById('api-key').value = userSettings.apiKey;
+                document.getElementById('quiz-prompt').placeholder = userSettings.quizPrompt;
+                document.getElementById('quiz-prompt').value = '';
+                applyFontSettings(userSettings);
+            };
+
+            // --- Core Logic ---
+
+            // markdown
+            const updatePreview = (markdown) => {
+                previewPane.innerHTML = marked.parse(markdown || '', { sanitize: true });
+            };
+
+            // load
+            const loadNoteForDate = async (date) => {
+                selectedDate = date;
+                currentDate = new Date(date);
+                noteTitleEl.textContent = date.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+                const content = await window.electronAPI.loadNote(toISODateString(date));
+                noteEditorEl.value = content;
+                updatePreview(content);
+                await renderCalendar();
+            };
+            
+            // save
+            const saveCurrentNote = () => {
+                clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(async () => {
+                    await window.electronAPI.saveNote({ dateString: toISODateString(selectedDate), content: noteEditorEl.value });
+                    await renderCalendar();
+                }, 500);
+            };
+            
+            // calender
+            const renderCalendar = async () => {
+                calendarBodyEl.innerHTML = '';
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+                monthYearEl.textContent = `${currentDate.toLocaleString('default', { month: 'long' })} ${year}`;
+                const [notesInMonth, reminders] = await Promise.all([
+                    window.electronAPI.getNotesForMonth({ year, month }),
+                    window.electronAPI.getRemindersForMonth({ year, month })
+                ]);
+                const reminderNoteDates = Object.keys(reminders);
+                const firstDayOfMonth = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                for (let i = 0; i < firstDayOfMonth; i++) { calendarBodyEl.appendChild(document.createElement('div')); }
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const cellDate = new Date(year, month, day);
+                    const isoDate = toISODateString(cellDate);
+                    const dayEl = document.createElement('div');
+                    dayEl.className = 'calendar-day cursor-pointer';
+                    if (isoDate === toISODateString(selectedDate)) dayEl.classList.add('selected');
+                    if (reminderNoteDates.includes(isoDate)) {
+                        const dot = document.createElement('div');
+                        dot.className = 'reminder-dot';
+                        dot.title = `Reminder set for ${reminders[isoDate]}`;
+                        dayEl.appendChild(dot);
+                    }
+                    const dayNumber = document.createElement('div');
+                    dayNumber.className = 'day-number';
+                    dayNumber.textContent = day;
+                    if (isoDate === toISODateString(new Date())) dayNumber.classList.add('today');
+                    dayEl.appendChild(dayNumber);
+                    if (notesInMonth.includes(isoDate)) {
+                        const titleEl = document.createElement('div');
+                        titleEl.className = 'note-title';
+                        titleEl.textContent = '';
+                        dayEl.appendChild(titleEl);
+                        window.electronAPI.getNoteTitle(isoDate).then(title => {
+                            if (title) titleEl.textContent = title;
+                        });
+                    }
+                    dayEl.onclick = () => loadNoteForDate(cellDate);
+                    calendarBodyEl.appendChild(dayEl);
+                }
+            };
+
+            // ui toggle for modals 
+            const setupUIInteractions = () => {
+                const modals = {
+                    settings: { btn: document.getElementById('settings-btn'), modal: document.getElementById('settings-modal'), cancel: document.getElementById('cancel-settings') },
+                    quiz: { modal: document.getElementById('quiz-modal'), cancel: document.getElementById('close-quiz-modal') },
+                    info: { btn: document.getElementById('info-btn'), modal: document.getElementById('info-modal'), cancel: document.getElementById('close-info-modal') },
+                    reminder: { btn: document.getElementById('reminder-btn'), modal: document.getElementById('reminder-modal'), cancel: document.getElementById('cancel-reminder') },
+                    delete: { btn: document.getElementById('delete-btn'), modal: document.getElementById('delete-confirm-modal'), cancel: document.getElementById('cancel-delete') }
+                };
+                for (const key in modals) {
+                    const { btn, modal, cancel } = modals[key];
+                    if (btn) btn.addEventListener('click', () => modal.classList.remove('hidden'));
+                    cancel.addEventListener('click', () => {
+                        modal.classList.add('hidden');
+                        noteEditorEl.focus();
+                    });
+                }
+                toggleCalendarBtn.addEventListener('click', () => {
+                    const isHidden = leftPanel.classList.toggle('hidden');
+                    leftPanel.classList.toggle('w-1/3', !isHidden);
+                    leftPanel.classList.toggle('w-0', isHidden);
+                    leftPanel.classList.toggle('p-4', !isHidden);
+                    leftPanel.classList.toggle('p-0', isHidden);
+                    leftPanel.classList.toggle('border-r', !isHidden);
+                    leftPanel.classList.toggle('opacity-0', isHidden);
+                    
+                    rightPanel.classList.toggle('w-2/3', !isHidden);
+                    rightPanel.classList.toggle('w-full', isHidden);
+                    toggleCalendarBtn.classList.toggle('active', !isHidden);
+                });
+                document.getElementById('view-toggle').addEventListener('click', () => {
+                    noteEditorEl.classList.toggle('hidden');
+                    previewPane.classList.toggle('hidden');
+                    document.getElementById('view-toggle').classList.toggle('active');
+                    noteEditorEl.focus();
+                });
+
+            };
+
+            // reminder pop up @ startup 
+            const checkRemindersOnStartup = async () => {
+                const dueNotes = await window.electronAPI.getDueReminders();
+                const startupReminderModal = document.getElementById('startup-reminder-modal');
+                const dueRemindersList = document.getElementById('due-reminders-list');
+                if (dueNotes && dueNotes.length > 0) {
+                    dueRemindersList.innerHTML = '';
+                    dueNotes.forEach(note => {
+                        const item = document.createElement('div');
+                        item.className = 'p-2 rounded-md hover:bg-gray-700 cursor-pointer border border-gray-600';
+                        item.innerHTML = `<div class="font-bold">${note.reviewDate}</div><div class="text-sm text-gray-400">${note.title}</div>`;
+                        item.onclick = () => {
+                            const [year, month, day] = note.noteDate.split('-').map(Number);
+                            loadNoteForDate(new Date(year, month - 1, day));
+                            startupReminderModal.classList.add('hidden');
+                        };
+                        dueRemindersList.appendChild(item);
+                    });
+                    startupReminderModal.classList.remove('hidden');
+                }
+            };
+            
+            // --- App Initialization & Event Listeners ---
+            const main = async () => {
+                document.getElementById('title-bar-text').textContent = document.title;
+                document.getElementById('minimize-btn').addEventListener('click', () => window.electronAPI.minimizeWindow());
+                document.getElementById('maximize-btn').addEventListener('click', () => window.electronAPI.maximizeWindow());
+                document.getElementById('close-btn').addEventListener('click', () => window.electronAPI.closeWindow());
+
+
+                await loadAndApplySettings();
+                await loadNoteForDate(new Date());
+                setupUIInteractions();
+                await checkRemindersOnStartup();
+
+                noteEditorEl.addEventListener('input', () => {
+                    saveCurrentNote();
+                    updatePreview(noteEditorEl.value);
+                });
+
+                document.getElementById('save-settings').addEventListener('click', async () => {
+                    userSettings.apiKey = document.getElementById('api-key').value;
+                    userSettings.quizPrompt = document.getElementById('quiz-prompt').value || document.getElementById('quiz-prompt').placeholder;
+                    userSettings.fontSize = document.getElementById('font-size-select').value;
+                    userSettings.fontFamily = document.getElementById('font-family-select').value;
+                    await window.electronAPI.saveSettings(userSettings);
+                    applyFontSettings(userSettings);
+                    document.getElementById('settings-modal').classList.add('hidden');
+                    noteEditorEl.focus();
+                });
+
+                // deleting the note
+                document.getElementById('confirm-delete').addEventListener('click', async () => {
+                    await window.electronAPI.deleteNote(toISODateString(selectedDate));
+                    document.getElementById('delete-confirm-modal').classList.add('hidden');
+                    await loadNoteForDate(selectedDate);
+                    noteEditorEl.focus();
+                });
+
+                // reminder logic
+                document.getElementById('confirm-reminder').addEventListener('click', async () => {
+                    const delayInDays = parseInt(document.getElementById('reminder-time').value, 10);
+                    if (delayInDays > 0) {
+                        await window.electronAPI.setReminder({ noteDate: toISODateString(selectedDate), delayInDays });
+                        document.getElementById('reminder-modal').classList.add('hidden');
+                        await renderCalendar();
+                        noteEditorEl.focus();
+                    } else { alert("Please enter a positive number of days."); }
+                });
+
+
+                // gemini api logic 
+                quizBtn.addEventListener('click', async () => {
+                    const quizDelimiter = "\n\n---\n\n### 🧠 Active Recall Quiz\n";
+                    const currentNoteContent = noteEditorEl.value;
+                    if (currentNoteContent.includes(quizDelimiter)) {
+                        const existingQuiz = currentNoteContent.split(quizDelimiter)[1];
+                        document.getElementById('quiz-content').innerHTML = marked.parse(existingQuiz || '');
+                        document.getElementById('quiz-modal').classList.remove('hidden');
+                        return;
+                    }
+                    if (currentNoteContent.trim().length < 20) return alert("Please write more before generating a quiz.");
+                    if (!userSettings.apiKey) return alert("Please set your Gemini API key in the settings first.");
+                    const prompt = `${userSettings.quizPrompt}\n\n---\n${currentNoteContent.split(quizDelimiter)[0]}`;
+                    aiLoader.classList.remove('hidden');
+                    quizBtn.disabled = true;
+                    try {
+                        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${userSettings.apiKey}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                        });
+                        if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+                        const result = await response.json();
+                        const quizText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (quizText) {
+                            noteEditorEl.value += `${quizDelimiter}${quizText}`;
+                            saveCurrentNote();
+                            updatePreview(noteEditorEl.value);
+                            document.getElementById('quiz-content').innerHTML = marked.parse(quizText);
+                            document.getElementById('quiz-modal').classList.remove('hidden');
+                        } else { alert("Sorry, I couldn't generate a quiz."); }
+                    } catch (error) {
+                        console.error("Gemini API call failed:", error);
+                        alert(`Error generating quiz: ${error.message}`);
+                    } finally {
+                        aiLoader.classList.add('hidden');
+                        quizBtn.disabled = false;
+                        noteEditorEl.focus();
+                    }
+                });
+
+                // jump to current date
+                jumpTodayBtn.addEventListener('click', () => {
+                    loadNoteForDate(new Date());
+                });
+
+                document.getElementById('close-startup-reminder').addEventListener('click', () => {
+                    document.getElementById('startup-reminder-modal').classList.add('hidden');
+                });
+                
+                prevMonthBtn.addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); });
+                nextMonthBtn.addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); });
+                
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey) {
+                        const keyMap = {
+                            'b': 'toggle-calendar-btn', 'd': 'delete-btn', 'p': 'view-toggle',
+                            'q': 'quiz-btn', 'r': 'reminder-btn', ',': 'settings-btn', 'i': 'info-btn'
+                        };
+                        const btnId = keyMap[e.key.toLowerCase()];
+                        if (btnId) {
+                            e.preventDefault();
+                            document.getElementById(btnId).click();
+                        }
+                    }
+                });
+
+                // when Ctrl + Shift + C 
+                window.electronAPI.onCapture((text) => { 
+                    noteEditorEl.value += `\n\n---\n\${text}`; 
+                    saveCurrentNote(); 
+                    updatePreview(noteEditorEl.value); 
+                });
+            };
+            main().catch(console.error);
+        });
+    </script>
+</body>
+</html>
