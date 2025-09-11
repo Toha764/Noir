@@ -27,3 +27,4 @@ replay_pid*
 out/
 node_modules/
 *.env
+.env
