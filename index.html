@@ -274,9 +274,100 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Create mock electronAPI for web version
             if (typeof window.electronAPI === 'undefined') {
-                document.body.innerHTML = `<div class="bg-black text-red-400 p-8 h-screen"><h1 class="text-2xl">Application Failed to Load</h1><p>Please run the app using 'npm start'.</p></div>`;
-                return;
+                window.electronAPI = {
+                    getSettings: () => Promise.resolve({
+                        apiKey: localStorage.getItem('noir-api-key') || '',
+                        quizPrompt: localStorage.getItem('noir-quiz-prompt') || `You are an AI that transforms raw daily notes into active recall questions in the style of Anki flashcards. 
+                    Rules:
+                    - Output questions and answers separately (by few spaces) so that answers can't be seen directly when self quizzing.
+                    - Extract key concepts, people, places, dates, numbers, cause/effect, or definitions from the notes. 
+                    - Phrase each as a clear, focused recall question (avoid yes/no, avoid giving away context in the question).
+                    - Use formats like: "What...", "Who...", "When...", "Where...", "Why...", "How..."
+                    - Keep each question short, unambiguous, and memory-focused.
+                    - Output as a simple bulleted list.`,
+                        fontSize: localStorage.getItem('noir-font-size') || 'base',
+                        fontFamily: localStorage.getItem('noir-font-family') || 'mono'
+                    }),
+                    saveSettings: (settings) => {
+                        localStorage.setItem('noir-api-key', settings.apiKey);
+                        localStorage.setItem('noir-quiz-prompt', settings.quizPrompt);
+                        localStorage.setItem('noir-font-size', settings.fontSize);
+                        localStorage.setItem('noir-font-family', settings.fontFamily);
+                        return Promise.resolve();
+                    },
+                    loadNote: (dateString) => Promise.resolve(localStorage.getItem(`noir-note-${dateString}`) || ''),
+                    saveNote: ({ dateString, content }) => {
+                        localStorage.setItem(`noir-note-${dateString}`, content);
+                        return Promise.resolve();
+                    },
+                    deleteNote: (dateString) => {
+                        localStorage.removeItem(`noir-note-${dateString}`);
+                        localStorage.removeItem(`noir-reminder-${dateString}`);
+                        return Promise.resolve();
+                    },
+                    getNotesForMonth: ({ year, month }) => {
+                        const monthString = (month + 1).toString().padStart(2, '0');
+                        const prefix = `noir-note-${year}-${monthString}`;
+                        const notes = [];
+                        for (let i = 0; i < localStorage.length; i++) {
+                            const key = localStorage.key(i);
+                            if (key && key.startsWith(prefix)) {
+                                notes.push(key.replace('noir-note-', ''));
+                            }
+                        }
+                        return Promise.resolve(notes);
+                    },
+                    getNoteTitle: (dateString) => {
+                        const content = localStorage.getItem(`noir-note-${dateString}`) || '';
+                        const lines = content.split('\n');
+                        const firstNonEmptyLine = lines.find(line => line.trim() !== '');
+                        const title = firstNonEmptyLine ? firstNonEmptyLine.replace(/^#+\s*/, '').trim() : '';
+                        return Promise.resolve(title);
+                    },
+                    getRemindersForMonth: ({ year, month }) => {
+                        const monthString = (month + 1).toString().padStart(2, '0');
+                        const prefix = `noir-reminder-${year}-${monthString}`;
+                        const reminders = {};
+                        for (let i = 0; i < localStorage.length; i++) {
+                            const key = localStorage.key(i);
+                            if (key && key.startsWith(prefix)) {
+                                const noteDate = key.replace('noir-reminder-', '');
+                                reminders[noteDate] = localStorage.getItem(key);
+                            }
+                        }
+                        return Promise.resolve(reminders);
+                    },
+                    setReminder: ({ noteDate, delayInDays }) => {
+                        const reviewDate = new Date();
+                        reviewDate.setDate(reviewDate.getDate() + delayInDays);
+                        const reviewDateString = reviewDate.toISOString().split('T')[0];
+                        localStorage.setItem(`noir-reminder-${noteDate}`, reviewDateString);
+                        return Promise.resolve({ success: true, message: 'Reminder set!' });
+                    },
+                    getDueReminders: () => {
+                        const today = new Date().toISOString().split('T')[0];
+                        const dueNotes = [];
+                        for (let i = 0; i < localStorage.length; i++) {
+                            const key = localStorage.key(i);
+                            if (key && key.startsWith('noir-reminder-')) {
+                                const reviewDate = localStorage.getItem(key);
+                                if (reviewDate && reviewDate <= today) {
+                                    const noteDate = key.replace('noir-reminder-', '');
+                                    const content = localStorage.getItem(`noir-note-${noteDate}`) || '';
+                                    const title = content.split('\n')[0].replace(/^#+\s*/, '').trim() || 'Untitled Note';
+                                    dueNotes.push({ noteDate, reviewDate, title });
+                                }
+                            }
+                        }
+                        return Promise.resolve(dueNotes);
+                    },
+                    minimizeWindow: () => {},
+                    maximizeWindow: () => {},
+                    closeWindow: () => {},
+                    onCapture: () => {}
+                };
             }
 
             // --- App State & DOM Elements ---
