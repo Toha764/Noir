@@ -1,6 +1,6 @@
 {
-  "name": "noir",
-  "version": "1.0.3",
+  "name": "Noir",
+  "version": "2.0.0",
   "description": "A simple note-taking app for daily entries for Programmers, Students, and Journals ",
   "main": "main.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "make": "electron-forge make"
   },
   "keywords": [],
-  "author": "Your Name",
+  "author": "Stechkin",
   "license": "ISC",
   "devDependencies": {
     "@electron-forge/cli": "^7.4.0",
@@ -35,4 +35,3 @@
     }
   }
 }
-

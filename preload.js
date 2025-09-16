@@ -1,4 +1,4 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer, shell } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
     // --- Settings ---
@@ -11,11 +11,17 @@ contextBridge.exposeInMainWorld('electronAPI', {
     deleteNote: (dateString) => ipcRenderer.invoke('delete-note', dateString),
     getNotesForMonth: (date) => ipcRenderer.invoke('get-notes-for-month', date),
     getNoteTitle: (dateString) => ipcRenderer.invoke('get-note-title', dateString),
+    getAllNotes: () => ipcRenderer.invoke('get-all-notes'),
 
     // --- Reminders ---
     setReminder: (reminder) => ipcRenderer.invoke('set-reminder', reminder),
     getRemindersForMonth: (date) => ipcRenderer.invoke('get-reminders-for-month', date),
     getDueReminders: () => ipcRenderer.invoke('get-due-reminders'),
+    deleteReminder: (noteDate) => ipcRenderer.invoke('delete-reminder', noteDate),
+    
+    // --- Images ---
+    savePastedImage: (data) => ipcRenderer.invoke('save-pasted-image', data),
+    openUserDataPath: () => ipcRenderer.send('open-user-data-path'),
 
     // --- Window Controls ---
     minimizeWindow: () => ipcRenderer.send('window-minimize'),

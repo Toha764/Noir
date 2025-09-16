@@ -1,6 +1,7 @@
-const { app, BrowserWindow, ipcMain, globalShortcut, clipboard, Notification } = require('electron');
+const { app, BrowserWindow, ipcMain, globalShortcut, clipboard, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto'); // generating uid for photos
 
 // --- File Paths ---
 const userDataPath = app.getPath('userData');
@@ -26,7 +27,7 @@ function getSettings() {
         apiKey: '',
         quizPrompt: `You are an AI that transforms raw daily notes into active recall questions in the style of Anki flashcards. 
                     Rules:
-                    - Output questions and answers separately (by few spaces) so that answers can't be seen directly when self quizzing.
+                    - Output questions and answers in separate sections (in order 1, 2, 3...) so that answers can't be seen directly when self quizzing.
                     - Extract key concepts, people, places, dates, numbers, cause/effect, or definitions from the notes. 
                     - Phrase each as a clear, focused recall question (avoid yes/no, avoid giving away context in the question).
                     - Use formats like: "What...", "Who...", "When...", "Where...", "Why...", "How..."
@@ -91,10 +92,7 @@ app.whenReady().then(() => {
     createWindow();
 
     // --- window controls --- 
-    ipcMain.on('window-minimize', () => {
-        mainWindow.minimize();
-    });
-
+    ipcMain.on('window-minimize', () => mainWindow.minimize());
     ipcMain.on('window-maximize', () => {
         if (mainWindow.isMaximized()) {
             mainWindow.unmaximize();
@@ -102,10 +100,46 @@ app.whenReady().then(() => {
             mainWindow.maximize();
         }
     });
-
-    ipcMain.on('window-close', () => {
-        mainWindow.close();
+    ipcMain.on('window-close', () => mainWindow.close());
+    
+    // opening path of images 
+    ipcMain.on('open-user-data-path', () => {
+        shell.openPath(userDataPath);
     });
+
+    // --- saving pasted images ---
+    ipcMain.handle('save-pasted-image', (event, { buffer, mimeType }) => {
+        try {
+            const extension = mimeType.split('/')[1];
+            const fileName = `${crypto.randomUUID()}.${extension}`;
+            const filePath = path.join(imagesPath, fileName);
+            fs.writeFileSync(filePath, Buffer.from(buffer));
+            return filePath; 
+        } catch (error) {
+            console.error('Failed to save image:', error);
+            return null;
+        }
+    });
+
+    // --- [NEW] Handler to get all note content for client-side search ---
+    ipcMain.handle('get-all-notes', () => {
+        const notes = [];
+        try {
+            const files = fs.readdirSync(notesPath);
+            for (const file of files) {
+                if (path.extname(file) === '.md') {
+                    const dateString = file.replace('.md', '');
+                    const filePath = path.join(notesPath, file);
+                    const content = fs.readFileSync(filePath, 'utf-8');
+                    notes.push({ dateString, content });
+                }
+            }
+        } catch (error) {
+            console.error('Failed to get all notes:', error);
+        }
+        return notes;
+    });
+    
 
     // --- Other IPC Handlers ---
     ipcMain.handle('get-settings', () => getSettings());
@@ -144,8 +178,7 @@ app.whenReady().then(() => {
             const content = fs.readFileSync(filePath, 'utf-8');
             const lines = content.split('\n');
             const firstNonEmptyLine = lines.find(line => line.trim() !== '');
-            const title = firstNonEmptyLine ? firstNonEmptyLine.replace(/^#+\s*/, '').trim() : '';
-            return title;
+            return firstNonEmptyLine ? firstNonEmptyLine.replace(/^#+\s*/, '').trim() : '';
         }
         return '';
     });
@@ -169,6 +202,13 @@ app.whenReady().then(() => {
         reminders[noteDate] = reviewDateString;
         saveReminders(reminders);
         return { success: true, message: 'Reminder set!' };
+    });
+    ipcMain.handle('delete-reminder', (event, noteDate) => {
+        const reminders = getReminders();
+        if (reminders[noteDate]) {
+            delete reminders[noteDate];
+            saveReminders(reminders);
+        }
     });
     ipcMain.handle('get-due-reminders', (event) => {
         const reminders = getReminders();
