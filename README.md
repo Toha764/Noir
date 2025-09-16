@@ -14,10 +14,10 @@ You do not need any programming knowledge or tools to install and use noir.
 
 2. Download the latest application file for your operating system:
 
-   * For **Windows**: Download `noir-version-win32-x64`
+   * For **Windows**: Download `noir-version-win32-x64.rar`
    * For **macOS**: Coming Soon!
 
-3. Once downloaded, double-click the Application icon to open. 
+3. Once downloaded, extract and click on the Noir Application and run it.
 
 > For API, currently only Gemini is supported. [Please click here to get the keys](https://aistudio.google.com/app/apikey)
 
