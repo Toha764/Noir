@@ -1,10 +1,10 @@
 # Noir
 
-A simple, beautiful note-taking app for daily entries, designed for Programmers, Students, and Journal Keepers.
+A simple, minimalistic note-taking app for daily entries, designed for Programmers, Students, and Journal Keepers.
 
 ## Why "Develop" this Application? 
 
-This application's code has been generated mostly using AI (even the logo) for educational purposes- mainly to learn API calls, CSS/Tailwind design pattern, JavaScript concepts, and lastly ElectronJs. I felt the need of this kind of app when I discovered new terms, concepts, keywords etc across the internet thoughout the day as I used to forget what I forgot. With the feature similar to Spaced Repetetion and "Quiz Me" I was able to recall a lot of it. By the way, the theme was inspired by the word "Noir" which means "Black" in French. (Sorry if you are Light Mode User, i tried to add it but failed, I will try in the future again :3)
+This application's code has been generated mostly using AI (even the logo) for educational purposes- mainly to learn API calls, CSS/Tailwind design patterns, JavaScript concepts, and lastly ElectronJs. I felt the need of this kind of app when I discovered new terms, concepts, keywords etc. across the internet, thoughout the day as I used to forget what I forgot. With the feature similar to Spaced Repetetion and "Quiz Me" I was able to recall a lot of it. By the way, the theme was inspired by the word "Noir" which means "Black" in French. (Sorry if you are Light Mode User, i tried to add it but failed, I will try in the future again :3)
 
 ## For Users: Installing the App
 
