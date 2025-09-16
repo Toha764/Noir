@@ -14,7 +14,7 @@ You do not need any programming knowledge or tools to install and use noir.
 
 2. Download the latest application file for your operating system:
 
-   * For **Windows**: Download `noir-version-win32-x64.rar`
+   * For **Windows**: Download `noir-version-win32-x64.zip`
    * For **macOS**: Coming Soon!
 
 3. Once downloaded, extract and click on the Noir Application and run it.
