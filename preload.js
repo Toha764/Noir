@@ -18,9 +18,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getRemindersForMonth: (date) => ipcRenderer.invoke('get-reminders-for-month', date),
     getDueReminders: () => ipcRenderer.invoke('get-due-reminders'),
     deleteReminder: (noteDate) => ipcRenderer.invoke('delete-reminder', noteDate),
-    
+
     // --- Images ---
     savePastedImage: (data) => ipcRenderer.invoke('save-pasted-image', data),
+    getImagesPath: () => ipcRenderer.invoke('get-images-path'),
     openUserDataPath: () => ipcRenderer.send('open-user-data-path'),
 
     // --- Window Controls ---

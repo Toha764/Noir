@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Noir</title>
+    <title></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
@@ -11,112 +12,244 @@
     <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-dark.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@400;700&display=swap"
+        rel="stylesheet">
     <style>
         /* --- theme --- */
-        body { 
+        body {
             font-family: 'Roboto Mono', monospace;
             background-color: #0A0A0A;
             margin: 0;
         }
-        .font-sans { font-family: 'Inter', sans-serif; }
-        .font-mono { font-family: 'Roboto Mono', monospace; }
+
+        .font-sans {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .font-mono {
+            font-family: 'Roboto Mono', monospace;
+        }
 
         /* --- title bar --- */
         #title-bar {
             -webkit-app-region: drag;
         }
+
         .title-bar-btn {
             -webkit-app-region: no-drag;
-            width: 46px; 
+            width: 46px;
             height: 100%;
             display: inline-flex;
             justify-content: center;
             align-items: center;
             color: #d1d5db;
-            transition: all 0.15s ease-in-out; 
+            transition: all 0.15s ease-in-out;
         }
-        
+
         .title-bar-btn:hover {
             background-color: #6b7280;
         }
+
         #close-btn:hover {
-            background-color: #e53e3e; 
+            background-color: #e53e3e;
         }
 
-        .calendar-grid { 
-            display: grid; 
-            grid-template-columns: repeat(7, minmax(0, 1fr)); 
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
             grid-auto-rows: minmax(110px, 1fr);
-            gap: 8px; 
+            gap: 8px;
             flex-grow: 1;
         }
+
         .calendar-day {
-            display: flex; flex-direction: column; align-items: flex-start;
-            padding: 4px 8px; border: 1px solid #374151; border-radius: 0.375rem;
-            position: relative; transition: all 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 4px 8px;
+            border: 1px solid #374151;
+            border-radius: 0.375rem;
+            position: relative;
+            transition: all 0.2s ease-in-out;
         }
-        .calendar-day:hover { border-color: #6b7280; }
-        .calendar-day.selected { border-color: white !important; }
+
+        .calendar-day:hover {
+            border-color: #6b7280;
+        }
+
+        .calendar-day.selected {
+            border-color: white !important;
+        }
+
         .reminder-dot {
-            position: absolute; top: 6px; right: 6px;
-            width: 8px; height: 8px; background-color: white;
-            border-radius: 9999px; border: 1px solid #111111;
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 8px;
+            height: 8px;
+            background-color: white;
+            border-radius: 9999px;
+            border: 1px solid #111111;
         }
+
         .day-number {
-            font-weight: 400; width: 24px; height: 24px;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 9999px; margin-bottom: 4px; flex-shrink: 0;
+            font-weight: 400;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            margin-bottom: 4px;
+            flex-shrink: 0;
         }
-        .calendar-day.today .day-number { 
-            background-color: transparent; color: white; border: 1px solid white;
+
+        .calendar-day.today .day-number {
+            background-color: transparent;
+            color: white;
+            border: 1px solid white;
         }
+
         .note-title {
-            font-size: 0.75rem; line-height: 1.2; overflow: hidden;
-            display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
-            color: #9ca3af; word-break: break-word;
-        }  
-        
+            font-size: 0.75rem;
+            line-height: 1.2;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            color: #9ca3af;
+            word-break: break-word;
+        }
+
         .loader {
-            border: 4px solid #4b5563; border-top: 4px solid #ffffff;
-            animation: spin 1s linear infinite; border-radius: 50%; width: 24px; height: 24px;
+            border: 4px solid #4b5563;
+            border-top: 4px solid #ffffff;
+            animation: spin 1s linear infinite;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
         /* markdown style*/
-        .markdown-body h1 { font-size: 1.875rem; font-weight: 700; margin: 1em 0 0.5em; color: white; }
-        .markdown-body h2 { font-size: 1.5rem; font-weight: 700; margin: 1em 0 0.5em; color: white; }
-        .markdown-body h3 { font-size: 1.25rem; font-weight: 700; margin: 1em 0 0.5em; color: white; }
-        .markdown-body p { margin: 0.5em 0; }
-
-        .markdown-body ul { margin: 0.5em 0; padding-left: 1.5rem; list-style-type: disc; list-style-position: inside; }
-        .markdown-body ol { margin: 0.5em 0; padding-left: 1.5rem; list-style-type: decimal; list-style-position: inside; }
-        .markdown-body ul ul, .markdown-body ol ol { margin-top: 0; margin-bottom: 0; }
-
-        .markdown-body li { margin: 0.25em 0; }
-        .markdown-body strong { color: white; font-weight: bold; }
-        .markdown-body em { color: #e5e7eb; font-style: italic; }
-        .markdown-body u { text-decoration: underline; }
-        .markdown-body mark { background-color: #A259FF; color: #000; padding: 2px 4px; border-radius: 2px; }
-        .markdown-body a { color: white; text-decoration: underline; }
-        .markdown-body blockquote { border-left-color: #6b7280; color: #9ca3af; padding-left: 1rem; margin: 1em 0; }
-        .markdown-body code:not([class*="language-"]) { background-color: #374151; padding: 2px 4px; border-radius: 4px; color: #e5e7eb; }
-        
-        .markdown-body pre { 
-            position: relative; 
-            background-color: #111827; 
-            border: 1px solid #1f2937;
-            padding: 1rem; 
-            border-radius: 8px; 
-            overflow-x: auto; 
-            margin: 1em 0; 
+        .markdown-body h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin: 1em 0 0.5em;
+            color: white;
         }
-        .markdown-body pre code { background: none; padding: 0; }
-        
+
+        .markdown-body h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 1em 0 0.5em;
+            color: white;
+        }
+
+        .markdown-body h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 1em 0 0.5em;
+            color: white;
+        }
+
+        .markdown-body p {
+            margin: 0.5em 0;
+        }
+
+        .markdown-body ul {
+            margin: 0.5em 0;
+            padding-left: 1.5rem;
+            list-style-type: disc;
+            list-style-position: outside;
+        }
+
+        .markdown-body ol {
+            margin: 0.5em 0;
+            padding-left: 1.5rem;
+            list-style-type: decimal;
+            list-style-position: inside;
+        }
+
+        .markdown-body ul ul,
+        .markdown-body ol ol {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .markdown-body li {
+            margin: 0.25em 0;
+        }
+
+        .markdown-body strong {
+            color: white;
+            font-weight: bold;
+        }
+
+        .markdown-body em {
+            color: #e5e7eb;
+            font-style: italic;
+        }
+
+        .markdown-body u {
+            text-decoration: underline;
+        }
+
+        .markdown-body mark {
+            background-color: #A259FF;
+            color: #000;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+
+        .markdown-body a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .markdown-body blockquote {
+            border-left-color: #6b7280;
+            color: #9ca3af;
+            padding-left: 1rem;
+            margin: 1em 0;
+        }
+
+        .markdown-body code:not([class*="language-"]) {
+            background-color: #374151;
+            padding: 2px 4px;
+            border-radius: 4px;
+            color: #e5e7eb;
+        }
+
+        .markdown-body pre {
+            position: relative;
+            background-color: #111827;
+            border: 1px solid #1f2937;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1em 0;
+        }
+
+        .markdown-body pre code {
+            background: none;
+            padding: 0;
+        }
+
         .markdown-body pre ::selection {
             background-color: #52525b;
         }
-        
+
         .copy-code-btn {
             position: absolute;
             top: 0.5rem;
@@ -133,64 +266,111 @@
             align-items: center;
             justify-content: center;
         }
+
         .markdown-body pre:hover .copy-code-btn {
             opacity: 1;
         }
+
         .copy-code-btn:hover {
             background-color: #4b5563;
         }
 
-        .markdown-body > *:first-child { margin-top: 0; }
-        .markdown-body > *:last-child { margin-bottom: 0; }
+        .markdown-body>*:first-child {
+            margin-top: 0;
+        }
+
+        .markdown-body>*:last-child {
+            margin-bottom: 0;
+        }
 
         /* [UPDATED] Styles for images to appear in a row */
         .markdown-body p img {
             display: inline-block;
             vertical-align: middle;
             margin: 4px;
-            max-width: calc(33.33% - 8px); 
+            max-width: calc(33.33% - 8px);
             max-height: 200px;
             border-radius: 4px;
             cursor: pointer;
             transition: transform 0.2s ease-in-out;
         }
+
         .markdown-body p img:hover {
             transform: scale(1.05);
         }
-        
+
 
         .icon-btn {
-            background-color: transparent; color: #d1d5db; border: 1px solid #374151;
-            width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 0.375rem;
+            background-color: transparent;
+            color: #d1d5db;
+            border: 1px solid #374151;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.375rem;
         }
-        .icon-btn:hover { background-color: #1f2937; border-color: #6b7280;}
-        .icon-btn.active { background-color: #374151; border-color: white; }    
+
+        .icon-btn:hover {
+            background-color: #1f2937;
+            border-color: #6b7280;
+        }
+
+        .icon-btn.active {
+            background-color: #374151;
+            border-color: white;
+        }
 
         /* modal styles */
-        .modal-content { background-color: #0A0A0A; border: 1px solid #4a5568; }
-        .input-base { background-color: #111827; border: 1px solid #374151; }
-        .btn-secondary { background-color: #374151; }
-        .btn-secondary:hover { background-color: #4b5563; }
-        .btn-primary { background-color: #111827; border: 1px solid #6b7280; }
-        .btn-primary:hover { background-color: white; color: black; }
-        
+        .modal-content {
+            background-color: #0A0A0A;
+            border: 1px solid #4a5568;
+        }
+
+        .input-base {
+            background-color: #111827;
+            border: 1px solid #374151;
+        }
+
+        .btn-secondary {
+            background-color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+
+        .btn-primary {
+            background-color: #111827;
+            border: 1px solid #6b7280;
+        }
+
+        .btn-primary:hover {
+            background-color: white;
+            color: black;
+        }
+
         ::-webkit-scrollbar {
             width: 12px;
             height: 12px;
         }
+
         ::-webkit-scrollbar-track {
             background: #0A0A0A;
         }
+
         ::-webkit-scrollbar-thumb {
             background-color: #1f2937;
             border-radius: 6px;
             border: 3px solid #0A0A0A;
         }
+
         ::-webkit-scrollbar-thumb:hover {
             background-color: #374151;
         }
     </style>
-<script type="importmap">
+    <script type="importmap">
 {
   "imports": {
     "react": "https://aistudiocdn.com/react@^19.1.1",
@@ -201,209 +381,288 @@
 }
 </script>
 </head>
+
 <body class="text-gray-200 h-screen overflow-hidden flex flex-col">
 
-<div id="title-bar" class="h-8 w-full flex-shrink-0 flex items-center">
-    <img src="noir_app_icon.png" class="h-4 w-4 mr-2 ml-3" alt="App Icon">
-    <div id="title-bar-text" class="pr-2 text-sm text-gray-400 flex-grow"> </div>
-    <div class="flex-shrink-0 h-full">
-        <button id="minimize-btn" title="Minimize" class="title-bar-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2 8a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11A.5.5 0 0 1 2 8Z"/></svg>
-        </button>
-        <button id="maximize-btn" title="Maximize" class="title-bar-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M3 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-8zM4 4v7h7V4H4z"/></svg>
-        </button>
-        <button id="close-btn" title="Close" class="title-bar-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/></svg>
-        </button>
+    <div id="title-bar" class="h-8 w-full flex-shrink-0 flex items-center">
+        <div id="title-bar-text" class="pl-3 pr-2 text-sm text-gray-400 flex-grow"> </div>
+        <div class="flex-shrink-0 h-full">
+            <button id="minimize-btn" title="Minimize" class="title-bar-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M2 8a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11A.5.5 0 0 1 2 8Z" />
+                </svg>
+            </button>
+            <button id="maximize-btn" title="Maximize" class="title-bar-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                    <path
+                        d="M3 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-8zM4 4v7h7V4H4z" />
+                </svg>
+            </button>
+            <button id="close-btn" title="Close" class="title-bar-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                    <path
+                        d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
+                </svg>
+            </button>
+        </div>
     </div>
-</div>
-    
-<div class="flex flex-grow h-full overflow-hidden">
-    <div id="left-panel" class="w-1/3 p-4 border-r border-gray-700 flex flex-col transition-all duration-300 ease-in-out">
-        <div class="my-4 space-y-3">
-            <div class="flex items-center justify-between">
-                <button id="prev-month" class="p-2 rounded-md hover:bg-gray-700">&lt;</button>
-                <h2 id="month-year" class="font-bold text-lg uppercase tracking-widest"></h2>
-                <button id="next-month" class="p-2 rounded-md hover:bg-gray-600">&gt;</button>
-            </div>
-            <div class="flex items-center space-x-2">
-                <div class="relative flex-grow">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+
+    <div class="flex flex-grow h-full overflow-hidden">
+        <div id="left-panel"
+            class="w-1/3 p-4 border-r border-gray-700 flex flex-col transition-all duration-300 ease-in-out">
+            <div class="my-4 space-y-3">
+                <div class="flex items-center justify-between">
+                    <button id="prev-month" class="p-2 rounded-md hover:bg-gray-700">&lt;</button>
+                    <h2 id="month-year" class="font-bold text-lg uppercase tracking-widest"></h2>
+                    <button id="next-month" class="p-2 rounded-md hover:bg-gray-600">&gt;</button>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <div class="relative flex-grow">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <input type="text" id="search-input" placeholder="Search Notes"
+                            class="bg-[#1f2937] text-gray-300 text-sm rounded-md block w-full pl-10 p-1.5 focus:ring-1 focus:ring-white focus:outline-none">
+                        <div id="search-results"
+                            class="hidden absolute z-10 mt-1 w-full bg-[#111827] border border-gray-700 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                            <!-- Search results will be populated here -->
+                        </div>
+                    </div>
+                    <button id="jump-today-btn" title="Jump to Today"
+                        class="p-2 rounded-md hover:bg-gray-700 flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <circle cx="12" cy="12" r="6"></circle>
+                            <circle cx="12" cy="12" r="2"></circle>
                         </svg>
-                    </div>
-                    <input type="text" id="search-input" placeholder="Search Notes" class="bg-[#1f2937] text-gray-300 text-sm rounded-md block w-full pl-10 p-1.5 focus:ring-1 focus:ring-white focus:outline-none">
-                    <div id="search-results" class="hidden absolute z-10 mt-1 w-full bg-[#111827] border border-gray-700 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                        <!-- Search results will be populated here -->
-                    </div>
+                    </button>
                 </div>
-                 <button id="jump-today-btn" title="Jump to Today" class="p-2 rounded-md hover:bg-gray-700 flex-shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
-                </button>
+            </div>
+            <div class="grid grid-cols-7 text-center font-semibold text-sm text-gray-400 mb-2">
+                <div>SUN</div>
+                <div>MON</div>
+                <div>TUE</div>
+                <div>WED</div>
+                <div>THU</div>
+                <div>FRI</div>
+                <div>SAT</div>
+            </div>
+            <div id="calendar-body" class="calendar-grid"></div>
+        </div>
+
+        <div id="right-panel" class="w-2/3 p-6 flex flex-col relative transition-all duration-300 ease-in-out">
+            <div class="flex justify-between items-start mb-4">
+                <h1 id="note-date-title" class="text-2xl font-bold text-white uppercase tracking-widest"></h1>
+                <div class="flex items-center space-x-2">
+                    <div id="ai-loader" class="loader hidden"></div>
+                    <button id="toggle-calendar-btn" title="Toggle Calendar" class="icon-btn active"><svg
+                            xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="9" y1="3" x2="9" y2="21"></line>
+                        </svg></button>
+                    <button id="view-toggle" title="Toggle Preview (Ctrl+P)" class="icon-btn"><svg
+                            xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg></button>
+                    <button id="reminder-btn" title="Set a Reminder" class="icon-btn"><svg
+                            xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg></button>
+                    <button id="quiz-btn" title="Generate a Quiz" class="icon-btn"><svg
+                            xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg></button>
+                    <button id="delete-btn" title="Delete Note" class="icon-btn hover:border-red-500"><svg
+                            xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                            </path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg></button>
+                    <button id="settings-btn" title="Settings" class="icon-btn"><svg xmlns="http://www.w3.org/2000/svg"
+                            width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                            </path>
+                        </svg></button>
+                    <button id="info-btn" title="Info" class="icon-btn">i</button>
+                </div>
+            </div>
+            <div id="editor-container" class="flex-grow h-full min-h-0">
+                <textarea id="note-editor"
+                    class="w-full h-full p-4 bg-transparent border border-gray-700 rounded-lg text-lg leading-relaxed focus:ring-1 focus:ring-white focus:outline-none resize-none"
+                    placeholder="Write Today's Note"></textarea>
+                <div id="preview-pane"
+                    class="w-full h-full p-4 bg-transparent border border-gray-700 rounded-lg text-lg leading-relaxed overflow-y-auto hidden markdown-body">
+                </div>
             </div>
         </div>
-        <div class="grid grid-cols-7 text-center font-semibold text-sm text-gray-400 mb-2">
-            <div>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div>
-        </div>
-        <div id="calendar-body" class="calendar-grid"></div>
-    </div>
 
-    <div id="right-panel" class="w-2/3 p-6 flex flex-col relative transition-all duration-300 ease-in-out">
-        <div class="flex justify-between items-start mb-4">
-            <h1 id="note-date-title" class="text-2xl font-bold text-white uppercase tracking-widest"></h1>
-            <div class="flex items-center space-x-2">
-                <div id="ai-loader" class="loader hidden"></div>
-                <button id="toggle-calendar-btn" title="Toggle Calendar" class="icon-btn active"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg></button>
-                <button id="view-toggle" title="Toggle Preview (Ctrl+P)" class="icon-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
-                <button id="reminder-btn" title="Set a Reminder" class="icon-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></button>
-                <button id="quiz-btn" title="Generate a Quiz" class="icon-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></button>
-                <button id="delete-btn" title="Delete Note" class="icon-btn hover:border-red-500"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
-                <button id="settings-btn" title="Settings" class="icon-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button>
-                <button id="info-btn" title="Info" class="icon-btn">i</button>
-            </div>
-        </div>
-        <div id="editor-container" class="flex-grow h-full min-h-0">
-            <textarea id="note-editor" class="w-full h-full p-4 bg-transparent border border-gray-700 rounded-lg text-lg leading-relaxed focus:ring-1 focus:ring-white focus:outline-none resize-none" placeholder="Write Today's Note"></textarea>
-            <div id="preview-pane" class="w-full h-full p-4 bg-transparent border border-gray-700 rounded-lg text-lg leading-relaxed overflow-y-auto hidden markdown-body"></div>
-        </div>
-    </div>
-
-    <div id="settings-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-        <div class="modal-content p-8 rounded-lg shadow-xl max-w-2xl w-full">
-            <h2 class="text-2xl font-bold text-white mb-6 uppercase tracking-widest">Settings</h2>
-            <div class="space-y-6">
-                <div>
-                    <label for="api-key" class="block mb-2 font-semibold uppercase text-xs tracking-wider">Gemini API Key</label>
-                    <input type="password" id="api-key" class="input-base w-full p-2 rounded-md">
-                </div>
-                <div>
-                    <label for="quiz-prompt" class="block mb-2 font-semibold uppercase text-xs tracking-wider">"Quiz Me" Custom Prompt</label>
-                    <textarea id="quiz-prompt" rows="6" class="input-base w-full p-2 rounded-md"></textarea>
-                </div>
-                <div>
-                    <label class="block mb-2 font-semibold uppercase text-xs tracking-wider">File Storage</label>
-                    <button id="open-file-location-btn" class="btn-secondary w-full p-2 rounded-md text-left">Open File Location</button>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
+        <div id="settings-modal"
+            class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+            <div class="modal-content p-8 rounded-lg shadow-xl max-w-2xl w-full">
+                <h2 class="text-2xl font-bold text-white mb-6 uppercase tracking-widest">Settings</h2>
+                <div class="space-y-6">
                     <div>
-                        <label for="font-size-select" class="block mb-2 font-semibold uppercase text-xs tracking-wider">Font Size</label>
-                        <select id="font-size-select" class="input-base w-full p-2 rounded-md">
-                            <option value="sm">Small</option>
-                            <option value="base">Medium</option>
-                            <option value="lg">Large</option>
-                        </select>
+                        <label for="api-key" class="block mb-2 font-semibold uppercase text-xs tracking-wider">Gemini
+                            API Key</label>
+                        <input type="password" id="api-key" class="input-base w-full p-2 rounded-md">
                     </div>
                     <div>
-                        <label for="font-family-select" class="block mb-2 font-semibold uppercase text-xs tracking-wider">Font Family</label>
-                        <select id="font-family-select" class="input-base w-full p-2 rounded-md">
-                            <option value="mono">Monospace</option>
-                            <option value="sans">Sans-Serif</option>
-                        </select>
+                        <label for="quiz-prompt" class="block mb-2 font-semibold uppercase text-xs tracking-wider">"Quiz
+                            Me" Custom Prompt</label>
+                        <textarea id="quiz-prompt" rows="6" class="input-base w-full p-2 rounded-md"></textarea>
+                    </div>
+                    <div>
+                        <label class="block mb-2 font-semibold uppercase text-xs tracking-wider">File Storage</label>
+                        <button id="open-file-location-btn" class="btn-secondary w-full p-2 rounded-md text-left">Open
+                            File Location</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="font-size-select"
+                                class="block mb-2 font-semibold uppercase text-xs tracking-wider">Font Size</label>
+                            <select id="font-size-select" class="input-base w-full p-2 rounded-md">
+                                <option value="sm">Small</option>
+                                <option value="base">Medium</option>
+                                <option value="lg">Large</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="font-family-select"
+                                class="block mb-2 font-semibold uppercase text-xs tracking-wider">Font Family</label>
+                            <select id="font-family-select" class="input-base w-full p-2 rounded-md">
+                                <option value="mono">Monospace</option>
+                                <option value="sans">Sans-Serif</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="flex justify-end space-x-4 mt-8">
-                <button id="cancel-settings" class="btn-secondary px-4 py-2 rounded-md">Cancel</button>
-                <button id="save-settings" class="btn-primary px-4 py-2 rounded-md">Save</button>
-            </div>
-        </div>
-    </div>
-    <div id="delete-confirm-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-        <div class="modal-content p-8 rounded-lg shadow-xl max-w-sm w-full">
-             <h2 class="text-xl font-bold text-white mb-4 uppercase tracking-widest">Delete Note</h2>
-             <p class="text-gray-300 mb-6">Are you sure? This action cannot be undone.</p>
-             <div class="flex justify-end space-x-4">
-                 <button id="cancel-delete" class="btn-secondary px-4 py-2 rounded-md">Cancel</button>
-                 <button id="confirm-delete" class="btn-primary hover:border-red-500 px-4 py-2 rounded-md">Delete</button>
-             </div>
-         </div>
-     </div>
-     <div id="reminder-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-         <div class="modal-content p-8 rounded-lg shadow-xl max-w-sm w-full">
-             <h2 class="text-2xl font-bold text-white mb-4 uppercase tracking-widest">Set Reminder</h2>
-             <p class="mb-2 text-gray-300">Remind me to review this note in how many days?</p>
-             <input id="reminder-time" type="number" class="input-base w-full p-2 rounded-md" value="7">
-             <div class="flex justify-end space-x-4 mt-6">
-                 <button id="cancel-reminder" class="btn-secondary px-4 py-2 rounded-md">Cancel</button>
-                 <button id="confirm-reminder" class="btn-primary px-4 py-2 rounded-md">Set</button>
-             </div>
-         </div>
-     </div>
-     <div id="quiz-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-        <div class="modal-content p-8 rounded-lg shadow-xl max-w-lg w-full">
-            <h2 class="text-2xl font-bold text-white mb-4 uppercase tracking-widest">Active Recall Quiz</h2>
-            <div id="quiz-content" class="text-lg leading-relaxed max-h-96 overflow-y-auto markdown-body"></div>
-            <div class="flex justify-end space-x-4 mt-6">
-                <button id="close-quiz-modal" class="btn-secondary px-4 py-2 rounded-md">Close</button>
+                <div class="flex justify-end space-x-4 mt-8">
+                    <button id="cancel-settings" class="btn-secondary px-4 py-2 rounded-md">Cancel</button>
+                    <button id="save-settings" class="btn-primary px-4 py-2 rounded-md">Save</button>
+                </div>
             </div>
         </div>
-    </div>
-    <div id="info-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-        <div class="modal-content p-8 rounded-lg shadow-xl max-w-lg w-full">
-            <h2 class="text-2xl font-bold text-white mb-4 uppercase tracking-widest">Hotkeys</h2>
-            <ul class="list-disc list-inside space-y-2 text-gray-300">
-                <li><b>Paste Highlighted Text:</b> <code>Ctrl + Shift + C</code></li>
-                <li><b>Toggle Preview:</b> <code>Ctrl + P</code></li>
-                <li class="pt-2 border-t border-gray-700 mt-2"><b>Bold Text:</b> <code>Ctrl + B</code></li>
-                <li><b>Italicize Text:</b> <code>Ctrl + I</code></li>
-                <li><b>Underline Text:</b> <code>Ctrl + U</code></li>
-                <li><b>Highlight Text:</b> <code>Ctrl + H</code></li>
-                <li><b>Inline Code:</b> <code>Ctrl + K</code></li>
-                <li><b>Add Chekbox:</b> <code>Ctrl + T</code></li>
-            </ul>
-            <div class="flex justify-end space-x-4 mt-6">
-                <button id="close-info-modal" class="btn-primary px-4 py-2 rounded-md">Got it!</button>
+        <div id="delete-confirm-modal"
+            class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+            <div class="modal-content p-8 rounded-lg shadow-xl max-w-sm w-full">
+                <h2 class="text-xl font-bold text-white mb-4 uppercase tracking-widest">Delete Note</h2>
+                <p class="text-gray-300 mb-6">Are you sure? This action cannot be undone.</p>
+                <div class="flex justify-end space-x-4">
+                    <button id="cancel-delete" class="btn-secondary px-4 py-2 rounded-md">Cancel</button>
+                    <button id="confirm-delete"
+                        class="btn-primary hover:border-red-500 px-4 py-2 rounded-md">Delete</button>
+                </div>
             </div>
         </div>
-    </div>
-    <div id="startup-reminder-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-        <div class="modal-content p-8 rounded-lg shadow-xl max-w-lg w-full">
-            <h2 class="text-2xl font-bold text-white mb-4 uppercase tracking-widest">Reminders Due</h2>
-            <p class="text-gray-400 mb-6">The following notes are due for review:</p>
-            <div id="due-reminders-list" class="space-y-2 max-h-64 overflow-y-auto"></div>
-            <div class="flex justify-end space-x-4 mt-6">
-                <button id="close-startup-reminder" class="btn-primary px-4 py-2 rounded-md">Got it!</button>
+        <div id="reminder-modal"
+            class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+            <div class="modal-content p-8 rounded-lg shadow-xl max-w-sm w-full">
+                <h2 class="text-2xl font-bold text-white mb-4 uppercase tracking-widest">Set Reminder</h2>
+                <p class="mb-2 text-gray-300">Remind me to review this note in how many days?</p>
+                <input id="reminder-time" type="number" class="input-base w-full p-2 rounded-md" value="7">
+                <div class="flex justify-end space-x-4 mt-6">
+                    <button id="cancel-reminder" class="btn-secondary px-4 py-2 rounded-md">Cancel</button>
+                    <button id="confirm-reminder" class="btn-primary px-4 py-2 rounded-md">Set</button>
+                </div>
             </div>
         </div>
-    </div>
+        <div id="quiz-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+            <div class="modal-content p-8 rounded-lg shadow-xl max-w-lg w-full">
+                <h2 class="text-2xl font-bold text-white mb-4 uppercase tracking-widest">Active Recall Quiz</h2>
+                <div id="quiz-content" class="text-lg leading-relaxed max-h-96 overflow-y-auto markdown-body"></div>
+                <div class="flex justify-end space-x-4 mt-6">
+                    <button id="close-quiz-modal" class="btn-secondary px-4 py-2 rounded-md">Close</button>
+                </div>
+            </div>
+        </div>
+        <div id="info-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+            <div class="modal-content p-8 rounded-lg shadow-xl max-w-lg w-full">
+                <h2 class="text-2xl font-bold text-white mb-4 uppercase tracking-widest">Hotkeys</h2>
+                <ul class="list-disc list-inside space-y-2 text-gray-300">
+                    <li><b>Paste Highlighted Text:</b> <code>Ctrl + Shift + C</code></li>
+                    <li><b>Toggle Preview:</b> <code>Ctrl + P</code></li>
+                    <li class="pt-2 border-t border-gray-700 mt-2"><b>Bold Text:</b> <code>Ctrl + B</code></li>
+                    <li><b>Italicize Text:</b> <code>Ctrl + I</code></li>
+                    <li><b>Underline Text:</b> <code>Ctrl + U</code></li>
+                    <li><b>Highlight Text:</b> <code>Ctrl + H</code></li>
+                    <li><b>Inline Code:</b> <code>Ctrl + K</code></li>
+                    <li><b>Add Chekbox:</b> <code>Ctrl + T</code></li>
+                </ul>
+                <div class="flex justify-end space-x-4 mt-6">
+                    <button id="close-info-modal" class="btn-primary px-4 py-2 rounded-md">Got it!</button>
+                </div>
+            </div>
+        </div>
+        <div id="startup-reminder-modal"
+            class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+            <div class="modal-content p-8 rounded-lg shadow-xl max-w-lg w-full">
+                <h2 class="text-2xl font-bold text-white mb-4 uppercase tracking-widest">Reminders Due</h2>
+                <p class="text-gray-400 mb-6">The following notes are due for review:</p>
+                <div id="due-reminders-list" class="space-y-2 max-h-64 overflow-y-auto"></div>
+                <div class="flex justify-end space-x-4 mt-6">
+                    <button id="close-startup-reminder" class="btn-primary px-4 py-2 rounded-md">Got it!</button>
+                </div>
+            </div>
+        </div>
 
-    <div id="image-preview-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
-        <span id="close-image-preview" class="absolute top-4 right-6 text-white text-5xl font-bold cursor-pointer hover:text-gray-400 transition-colors duration-200">&times;</span>
-        <img id="modal-image" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl" src="" alt="Image Preview">
-    </div>
+        <div id="image-preview-modal"
+            class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+            <span id="close-image-preview"
+                class="absolute top-4 right-6 text-white text-5xl font-bold cursor-pointer hover:text-gray-400 transition-colors duration-200">&times;</span>
+            <img id="modal-image" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl" src=""
+                alt="Image Preview">
+        </div>
 
-    <script type="module">
-        import { GoogleGenAI } from "@google/genai";
+        <script type="module">
+            import { GoogleGenAI } from "@google/genai";
 
-        document.addEventListener('DOMContentLoaded', () => {
-            if (typeof window.electronAPI === 'undefined') {
-                console.log("Running in browser preview mode. Mocking electronAPI with localStorage.");
+            document.addEventListener('DOMContentLoaded', () => {
+                if (typeof window.electronAPI === 'undefined') {
+                    console.log("Running in browser preview mode. Mocking electronAPI with localStorage.");
 
-                // Hide desktop-only elements
-                const titleBar = document.getElementById('title-bar');
-                if (titleBar) titleBar.style.display = 'none';
+                    // Hide desktop-only elements
+                    const titleBar = document.getElementById('title-bar');
+                    if (titleBar) titleBar.style.display = 'none';
 
-                const getLocalStorage = (key, defaultValue) => {
-                    try {
-                        const data = localStorage.getItem(key);
-                        return data ? JSON.parse(data) : defaultValue;
-                    } catch (e) {
-                        console.error(`Error reading from localStorage key "${key}":`, e);
-                        return defaultValue;
-                    }
-                };
+                    const getLocalStorage = (key, defaultValue) => {
+                        try {
+                            const data = localStorage.getItem(key);
+                            return data ? JSON.parse(data) : defaultValue;
+                        } catch (e) {
+                            console.error(`Error reading from localStorage key "${key}":`, e);
+                            return defaultValue;
+                        }
+                    };
 
-                const setLocalStorage = (key, value) => {
-                    try {
-                        localStorage.setItem(key, JSON.stringify(value));
-                    } catch (e) {
-                        console.error(`Error writing to localStorage key "${key}":`, e);
-                    }
-                };
+                    const setLocalStorage = (key, value) => {
+                        try {
+                            localStorage.setItem(key, JSON.stringify(value));
+                        } catch (e) {
+                            console.error(`Error writing to localStorage key "${key}":`, e);
+                        }
+                    };
 
-                const defaultQuizPrompt = `You are an AI that transforms raw daily notes into active recall questions in the style of Anki flashcards. 
+                    const defaultQuizPrompt = `You are an AI that transforms raw daily notes into active recall questions in the style of Anki flashcards. 
                         Rules:
                         - Output questions and answers in separate sections (in order 1, 2, 3...) so that answers can't be seen directly when self quizzing.
                         - Extract key concepts, people, places, dates, numbers, cause/effect, or definitions from the notes. 
@@ -412,658 +671,711 @@
                         - Keep each question short, unambiguous, and memory-focused.
                         - Output as a simple bulleted list.`;
 
-                window.electronAPI = {
-                    getSettings: async () => getLocalStorage('noir_settings', { apiKey: '', quizPrompt: defaultQuizPrompt, fontSize: 'base', fontFamily: 'mono' }),
-                    saveSettings: async (settings) => setLocalStorage('noir_settings', settings),
-                    loadNote: async (dateString) => getLocalStorage('noir_notes', {})[dateString] || '',
-                    saveNote: async ({ dateString, content }) => {
-                        const notes = getLocalStorage('noir_notes', {});
-                        notes[dateString] = content;
-                        setLocalStorage('noir_notes', notes);
-                    },
-                    deleteNote: async (dateString) => {
-                        const notes = getLocalStorage('noir_notes', {});
-                        delete notes[dateString];
-                        setLocalStorage('noir_notes', notes);
-                        const reminders = getLocalStorage('noir_reminders', {});
-                        if (reminders[dateString]) {
-                            delete reminders[dateString];
-                            setLocalStorage('noir_reminders', reminders);
-                        }
-                    },
-                    getNotesForMonth: async ({ year, month }) => {
-                        const notes = getLocalStorage('noir_notes', {});
-                        const monthString = (month + 1).toString().padStart(2, '0');
-                        return Object.keys(notes).filter(date => date.startsWith(`${year}-${monthString}`));
-                    },
-                    getNoteTitle: async (dateString) => {
-                        const content = getLocalStorage('noir_notes', {})[dateString] || '';
-                        if (!content) return '';
-                        const firstNonEmptyLine = content.split('\n').find(line => line.trim() !== '');
-                        return firstNonEmptyLine ? firstNonEmptyLine.replace(/^#+\s*/, '').trim() : '';
-                    },
-                    getAllNotes: async () => {
-                        const notes = getLocalStorage('noir_notes', {});
-                        return Object.entries(notes).map(([dateString, content]) => ({ dateString, content }));
-                    },
-                    setReminder: async ({ noteDate, delayInDays }) => {
-                        const reminders = getLocalStorage('noir_reminders', {});
-                        const reviewDate = new Date();
-                        reviewDate.setDate(reviewDate.getDate() + delayInDays);
-                        reminders[noteDate] = reviewDate.toISOString().split('T')[0];
-                        setLocalStorage('noir_reminders', reminders);
-                    },
-                    getRemindersForMonth: async ({ year, month }) => {
-                        const reminders = getLocalStorage('noir_reminders', {});
-                        const monthString = (month + 1).toString().padStart(2, '0');
-                        const filtered = {};
-                        Object.keys(reminders).forEach(noteDate => {
-                            if (noteDate.startsWith(`${year}-${monthString}`)) {
-                                filtered[noteDate] = reminders[noteDate];
+                    window.electronAPI = {
+                        getSettings: async () => getLocalStorage('noir_settings', { apiKey: '', quizPrompt: defaultQuizPrompt, fontSize: 'base', fontFamily: 'mono' }),
+                        saveSettings: async (settings) => setLocalStorage('noir_settings', settings),
+                        loadNote: async (dateString) => getLocalStorage('noir_notes', {})[dateString] || '',
+                        saveNote: async ({ dateString, content }) => {
+                            const notes = getLocalStorage('noir_notes', {});
+                            notes[dateString] = content;
+                            setLocalStorage('noir_notes', notes);
+                        },
+                        deleteNote: async (dateString) => {
+                            const notes = getLocalStorage('noir_notes', {});
+                            delete notes[dateString];
+                            setLocalStorage('noir_notes', notes);
+                            const reminders = getLocalStorage('noir_reminders', {});
+                            if (reminders[dateString]) {
+                                delete reminders[dateString];
+                                setLocalStorage('noir_reminders', reminders);
                             }
-                        });
-                        return filtered;
-                    },
-                    getDueReminders: async () => {
-                        const reminders = getLocalStorage('noir_reminders', {});
-                        const notes = getLocalStorage('noir_notes', {});
-                        const today = new Date().toISOString().split('T')[0];
-                        const dueNotes = [];
-                        for (const noteDate in reminders) {
-                            if (reminders[noteDate] <= today) {
-                                const content = notes[noteDate] || '';
-                                const title = content.split('\n')[0].replace(/^#+\s*/, '').trim() || 'Untitled Note';
-                                dueNotes.push({ noteDate, reviewDate: reminders[noteDate], title });
-                            }
-                        }
-                        return dueNotes;
-                    },
-                    deleteReminder: async (noteDate) => {
-                        const reminders = getLocalStorage('noir_reminders', {});
-                        if (reminders[noteDate]) {
-                            delete reminders[noteDate];
+                        },
+                        getNotesForMonth: async ({ year, month }) => {
+                            const notes = getLocalStorage('noir_notes', {});
+                            const monthString = (month + 1).toString().padStart(2, '0');
+                            return Object.keys(notes).filter(date => date.startsWith(`${year}-${monthString}`));
+                        },
+                        getNoteTitle: async (dateString) => {
+                            const content = getLocalStorage('noir_notes', {})[dateString] || '';
+                            if (!content) return '';
+                            const firstNonEmptyLine = content.split('\n').find(line => line.trim() !== '');
+                            return firstNonEmptyLine ? firstNonEmptyLine.replace(/^#+\s*/, '').trim() : '';
+                        },
+                        getAllNotes: async () => {
+                            const notes = getLocalStorage('noir_notes', {});
+                            return Object.entries(notes).map(([dateString, content]) => ({ dateString, content }));
+                        },
+                        setReminder: async ({ noteDate, delayInDays }) => {
+                            const reminders = getLocalStorage('noir_reminders', {});
+                            const reviewDate = new Date();
+                            reviewDate.setDate(reviewDate.getDate() + delayInDays);
+                            reminders[noteDate] = reviewDate.toISOString().split('T')[0];
                             setLocalStorage('noir_reminders', reminders);
-                        }
-                    },
-                    savePastedImage: ({ buffer, mimeType }) => new Promise((resolve) => {
-                        const blob = new Blob([buffer], { type: mimeType });
-                        const reader = new FileReader();
-                        reader.onloadend = () => resolve(reader.result);
-                        reader.readAsDataURL(blob);
-                    }),
-                    openUserDataPath: () => alert("This feature is only available in the desktop app."),
-                    minimizeWindow: () => {},
-                    maximizeWindow: () => {},
-                    closeWindow: () => {},
-                    onCapture: (callback) => console.warn("Text capture shortcut is only available in the desktop app."),
+                        },
+                        getRemindersForMonth: async ({ year, month }) => {
+                            const reminders = getLocalStorage('noir_reminders', {});
+                            const monthString = (month + 1).toString().padStart(2, '0');
+                            const filtered = {};
+                            Object.keys(reminders).forEach(noteDate => {
+                                if (noteDate.startsWith(`${year}-${monthString}`)) {
+                                    filtered[noteDate] = reminders[noteDate];
+                                }
+                            });
+                            return filtered;
+                        },
+                        getDueReminders: async () => {
+                            const reminders = getLocalStorage('noir_reminders', {});
+                            const notes = getLocalStorage('noir_notes', {});
+                            const today = new Date().toISOString().split('T')[0];
+                            const dueNotes = [];
+                            for (const noteDate in reminders) {
+                                if (reminders[noteDate] <= today) {
+                                    const content = notes[noteDate] || '';
+                                    const title = content.split('\n')[0].replace(/^#+\s*/, '').trim() || 'Untitled Note';
+                                    dueNotes.push({ noteDate, reviewDate: reminders[noteDate], title });
+                                }
+                            }
+                            return dueNotes;
+                        },
+                        deleteReminder: async (noteDate) => {
+                            const reminders = getLocalStorage('noir_reminders', {});
+                            if (reminders[noteDate]) {
+                                delete reminders[noteDate];
+                                setLocalStorage('noir_reminders', reminders);
+                            }
+                        },
+                        savePastedImage: ({ buffer, mimeType }) => new Promise((resolve) => {
+                            const blob = new Blob([buffer], { type: mimeType });
+                            const reader = new FileReader();
+                            reader.onloadend = () => resolve(reader.result);
+                            reader.readAsDataURL(blob);
+                        }),
+                        openUserDataPath: () => alert("This feature is only available in the desktop app."),
+                        minimizeWindow: () => { },
+                        maximizeWindow: () => { },
+                        closeWindow: () => { },
+                        onCapture: (callback) => console.warn("Text capture shortcut is only available in the desktop app."),
+                    };
+                }
+
+                // --- App State & DOM Elements ---
+                let currentDate = new Date();
+                let selectedDate = new Date();
+                let saveTimeout;
+                let userSettings = {};
+                let searchableNotes = [];
+                const noteEditorEl = document.getElementById('note-editor');
+                const previewPane = document.getElementById('preview-pane');
+                const noteTitleEl = document.getElementById('note-date-title');
+                const monthYearEl = document.getElementById('month-year');
+                const calendarBodyEl = document.getElementById('calendar-body');
+                const leftPanel = document.getElementById('left-panel');
+                const rightPanel = document.getElementById('right-panel');
+                const toggleCalendarBtn = document.getElementById('toggle-calendar-btn');
+                const aiLoader = document.getElementById('ai-loader');
+                const quizBtn = document.getElementById('quiz-btn');
+                const prevMonthBtn = document.getElementById('prev-month');
+                const nextMonthBtn = document.getElementById('next-month');
+                const jumpTodayBtn = document.getElementById('jump-today-btn');
+
+                // --- Configure Marked.js ONCE on startup ---
+                const customExtension = {
+                    extensions: [{
+                        name: 'highlight',
+                        level: 'inline',
+                        start: (src) => src.indexOf('=='),
+                        tokenizer(src) {
+                            const rule = /^==((?:(?!==).)+)==/;
+                            const match = rule.exec(src);
+                            if (match) {
+                                return { type: 'highlight', raw: match[0], text: this.lexer.inlineTokens(match[1]) };
+                            }
+                        },
+                        renderer(token) { return `<mark>${this.parser.parseInline(token.text)}</mark>`; }
+                    }, {
+                        name: 'underline',
+                        level: 'inline',
+                        start: (src) => src.indexOf('++'),
+                        tokenizer(src) {
+                            const rule = /^\+\+((?:(?!\+\+).)+)\+\+/;
+                            const match = rule.exec(src);
+                            if (match) {
+                                return { type: 'underline', raw: match[0], text: this.lexer.inlineTokens(match[1]) };
+                            }
+                        },
+                        renderer(token) { return `<u>${this.parser.parseInline(token.text)}</u>`; }
+                    }]
                 };
-            }
 
-            // --- App State & DOM Elements ---
-            let currentDate = new Date();
-            let selectedDate = new Date();
-            let saveTimeout;
-            let userSettings = {};
-            let searchableNotes = [];
-            const noteEditorEl = document.getElementById('note-editor');
-            const previewPane = document.getElementById('preview-pane');
-            const noteTitleEl = document.getElementById('note-date-title');
-            const monthYearEl = document.getElementById('month-year');
-            const calendarBodyEl = document.getElementById('calendar-body');
-            const leftPanel = document.getElementById('left-panel');
-            const rightPanel = document.getElementById('right-panel');
-            const toggleCalendarBtn = document.getElementById('toggle-calendar-btn');
-            const aiLoader = document.getElementById('ai-loader');
-            const quizBtn = document.getElementById('quiz-btn');
-            const prevMonthBtn = document.getElementById('prev-month');
-            const nextMonthBtn = document.getElementById('next-month');
-            const jumpTodayBtn = document.getElementById('jump-today-btn');
+                // Custom renderer for images to handle relative paths
+                const renderer = new marked.Renderer();
+                const originalImageRenderer = renderer.image;
+                let imagesBasePath = '';
 
-            // --- Configure Marked.js ONCE on startup ---
-            const customExtension = {
-                extensions: [{
-                    name: 'highlight',
-                    level: 'inline',
-                    start: (src) => src.indexOf('=='),
-                    tokenizer(src) {
-                        const rule = /^==((?:(?!==).)+)==/;
-                        const match = rule.exec(src);
-                        if (match) {
-                            return { type: 'highlight', raw: match[0], text: this.lexer.inlineTokens(match[1]) };
-                        }
-                    },
-                    renderer(token) { return `<mark>${this.parser.parseInline(token.text)}</mark>`; }
-                }, {
-                    name: 'underline',
-                    level: 'inline',
-                    start: (src) => src.indexOf('++'),
-                    tokenizer(src) {
-                        const rule = /^\+\+((?:(?!\+\+).)+)\+\+/;
-                        const match = rule.exec(src);
-                        if (match) {
-                            return { type: 'underline', raw: match[0], text: this.lexer.inlineTokens(match[1]) };
-                        }
-                    },
-                    renderer(token) { return `<u>${this.parser.parseInline(token.text)}</u>`; }
-                }]
-            };
-            marked.use(customExtension);
-            marked.setOptions({
-                breaks: false,
-                gfm: true,
-                pedantic: false
-            });
-
-            // --- Search ---
-            const updateSearchIndex = async () => {
-                searchableNotes.length = 0; // Clear the array in place
-                const allNotes = await window.electronAPI.getAllNotes();
-                const titleRegex = /^(#+)\s+(.*)/gm;
-                if (!allNotes) return;
-                allNotes.forEach(note => {
-                    if (note && note.content) {
-                        const matches = [...note.content.matchAll(titleRegex)];
-                        matches.forEach(match => {
-                            const title = match[2].trim();
-                            if (title) {
-                                searchableNotes.push({ title, dateString: note.dateString });
-                            }
-                        });
+                renderer.image = ({ href, title, text }) => {
+                    if (href && href.startsWith('../images/') && imagesBasePath) {
+                        // Resolve relative path to absolute file path for display
+                        const filename = href.split('/').pop();
+                        // Use file:// protocol for local files
+                        const absolutePath = `file://${imagesBasePath}/${filename}`;
+                        return `<img src="${absolutePath}" alt="${text}" ${title ? `title="${title}"` : ''}>`;
                     }
+                    // Fallback to default renderer for other images
+                    if (originalImageRenderer) {
+                        return originalImageRenderer.call(renderer, { href, title, text });
+                    }
+                    return `<img src="${href}" alt="${text}" ${title ? `title="${title}"` : ''}>`;
+                };
+
+                // [NEW] Disable Setext headers (headers with under-lines) to prevent "---" from creating H2s
+                const tokenizer = {
+                    lheading(src) {
+                        return false; // completely disable Setext headings
+                    }
+                };
+                marked.use({ tokenizer });
+
+                marked.use(customExtension);
+                marked.use({ renderer });
+
+                marked.setOptions({
+                    breaks: false,
+                    gfm: true,
+                    pedantic: false
                 });
-            };
 
-            // --- Utility ---
-            const toISODateString = (date) => {
-                const year = date.getFullYear();
-                const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                const day = date.getDate().toString().padStart(2, '0');
-                return `${year}-${month}-${day}`;
-            };
-            
-            const wrapSelectedText = (textarea, wrapper) => {
-                const start = textarea.selectionStart;
-                const end = textarea.selectionEnd;
-                const selectedText = textarea.value.substring(start, end);
-                const newText = `${wrapper}${selectedText}${wrapper}`;
-                textarea.setRangeText(newText, start, end, 'select');
-                textarea.selectionStart = start + wrapper.length;
-                textarea.selectionEnd = end + wrapper.length;
-                textarea.dispatchEvent(new Event('input', { bubbles: true }));
-            };
-            
-            // --- Font Settings ---
-            const applyFontSettings = (settings) => {
-                const fontSize = settings.fontSize || 'base';
-                const fontFamily = settings.fontFamily || 'mono';
-                const elementsToStyle = [noteEditorEl, previewPane];
-                elementsToStyle.forEach(el => {
-                    el.classList.remove('text-sm', 'text-base', 'text-lg', 'font-mono', 'font-sans');
-                    el.classList.add(`text-${fontSize}`, `font-${fontFamily}`);
-                });
-                document.getElementById('font-size-select').value = fontSize;
-                document.getElementById('font-family-select').value = fontFamily;
-            };
-
-            // --- Settings ---
-            const loadAndApplySettings = async () => {
-                userSettings = await window.electronAPI.getSettings();
-                document.getElementById('api-key').value = userSettings.apiKey;
-                document.getElementById('quiz-prompt').placeholder = userSettings.quizPrompt;
-                document.getElementById('quiz-prompt').value = '';
-                applyFontSettings(userSettings);
-            };
-
-            // --- Core Logic ---
-            const updatePreview = (markdown) => {
-                previewPane.innerHTML = marked.parse(markdown || '');
-                Prism.highlightAllUnder(previewPane);
-
-                const codeBlocks = previewPane.querySelectorAll('pre');
-                codeBlocks.forEach(pre => {
-                    if (pre.querySelector('.copy-code-btn')) return;
-
-                    const button = document.createElement('button');
-                    button.className = 'copy-code-btn';
-                    button.title = 'Copy code';
-                    const copyIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
-                    const checkIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-                    
-                    button.innerHTML = copyIconSVG;
-
-                    button.addEventListener('click', () => {
-                        const code = pre.querySelector('code');
-                        if (code) {
-                            navigator.clipboard.writeText(code.innerText).then(() => {
-                                button.innerHTML = checkIconSVG;
-                                setTimeout(() => {
-                                    button.innerHTML = copyIconSVG;
-                                }, 2000);
-                            }).catch(err => {
-                                console.error('Failed to copy text: ', err);
+                // --- Search ---
+                const updateSearchIndex = async () => {
+                    searchableNotes.length = 0; // Clear the array in place
+                    const allNotes = await window.electronAPI.getAllNotes();
+                    const titleRegex = /^(#+)\s+(.*)/gm;
+                    if (!allNotes) return;
+                    allNotes.forEach(note => {
+                        if (note && note.content) {
+                            const matches = [...note.content.matchAll(titleRegex)];
+                            matches.forEach(match => {
+                                const title = match[2].trim();
+                                if (title) {
+                                    searchableNotes.push({ title, dateString: note.dateString });
+                                }
                             });
                         }
                     });
-                    
-                    pre.appendChild(button);
-                });
-            };
-
-            // load
-            const loadNoteForDate = async (date) => {
-                selectedDate = date;
-                currentDate = new Date(date);
-                noteTitleEl.textContent = date.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
-                const content = await window.electronAPI.loadNote(toISODateString(date));
-                noteEditorEl.value = content;
-                updatePreview(content);
-                await renderCalendar();
-            };
-            
-            // save
-            const saveCurrentNote = () => {
-                clearTimeout(saveTimeout);
-                saveTimeout = setTimeout(async () => {
-                    await window.electronAPI.saveNote({ dateString: toISODateString(selectedDate), content: noteEditorEl.value });
-                    await renderCalendar();
-                    await updateSearchIndex();
-                }, 500);
-            };
-            
-            // calender
-            const renderCalendar = async () => {
-                calendarBodyEl.innerHTML = '';
-                const year = currentDate.getFullYear();
-                const month = currentDate.getMonth();
-                monthYearEl.textContent = `${currentDate.toLocaleString('default', { month: 'long' })} ${year}`;
-                const [notesInMonth, reminders] = await Promise.all([
-                    window.electronAPI.getNotesForMonth({ year, month }),
-                    window.electronAPI.getRemindersForMonth({ year, month })
-                ]);
-                const reminderNoteDates = Object.keys(reminders);
-                const firstDayOfMonth = new Date(year, month, 1).getDay();
-                const daysInMonth = new Date(year, month + 1, 0).getDate();
-                for (let i = 0; i < firstDayOfMonth; i++) { calendarBodyEl.appendChild(document.createElement('div')); }
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const cellDate = new Date(year, month, day);
-                    const isoDate = toISODateString(cellDate);
-                    const dayEl = document.createElement('div');
-                    dayEl.className = 'calendar-day cursor-pointer';
-                    if (isoDate === toISODateString(selectedDate)) dayEl.classList.add('selected');
-                    if (reminderNoteDates.includes(isoDate)) {
-                        const dot = document.createElement('div');
-                        dot.className = 'reminder-dot';
-                        dot.title = `Reminder set for ${reminders[isoDate]}`;
-                        dayEl.appendChild(dot);
-                    }
-                    const dayNumber = document.createElement('div');
-                    dayNumber.className = 'day-number';
-                    dayNumber.textContent = day;
-                    if (isoDate === toISODateString(new Date())) dayNumber.classList.add('today');
-                    dayEl.appendChild(dayNumber);
-                    if (notesInMonth.includes(isoDate)) {
-                        const titleEl = document.createElement('div');
-                        titleEl.className = 'note-title';
-                        titleEl.textContent = '';
-                        dayEl.appendChild(titleEl);
-                        window.electronAPI.getNoteTitle(isoDate).then(title => {
-                            if (title) titleEl.textContent = title;
-                        });
-                    }
-                    dayEl.onclick = () => loadNoteForDate(cellDate);
-                    calendarBodyEl.appendChild(dayEl);
-                }
-            };
-
-            // ui toggle for modals 
-            const setupUIInteractions = () => {
-                const modals = {
-                    settings: { btn: document.getElementById('settings-btn'), modal: document.getElementById('settings-modal'), cancel: document.getElementById('cancel-settings') },
-                    quiz: { modal: document.getElementById('quiz-modal'), cancel: document.getElementById('close-quiz-modal') },
-                    info: { btn: document.getElementById('info-btn'), modal: document.getElementById('info-modal'), cancel: document.getElementById('close-info-modal') },
-                    reminder: { btn: document.getElementById('reminder-btn'), modal: document.getElementById('reminder-modal'), cancel: document.getElementById('cancel-reminder') },
-                    delete: { btn: document.getElementById('delete-btn'), modal: document.getElementById('delete-confirm-modal'), cancel: document.getElementById('cancel-delete') }
                 };
-                for (const key in modals) {
-                    const { btn, modal, cancel } = modals[key];
-                    if (btn) btn.addEventListener('click', () => modal.classList.remove('hidden'));
-                    cancel.addEventListener('click', () => {
-                        modal.classList.add('hidden');
-                        noteEditorEl.focus();
-                    });
-                }
-                toggleCalendarBtn.addEventListener('click', () => {
-                    const isHidden = leftPanel.classList.toggle('hidden');
-                    leftPanel.classList.toggle('w-1/3', !isHidden);
-                    leftPanel.classList.toggle('w-0', isHidden);
-                    leftPanel.classList.toggle('p-4', !isHidden);
-                    leftPanel.classList.toggle('p-0', isHidden);
-                    leftPanel.classList.toggle('border-r', !isHidden);
-                    leftPanel.classList.toggle('opacity-0', isHidden);
-                    
-                    rightPanel.classList.toggle('w-2/3', !isHidden);
-                    rightPanel.classList.toggle('w-full', isHidden);
-                    toggleCalendarBtn.classList.toggle('active', !isHidden);
-                });
-                document.getElementById('view-toggle').addEventListener('click', () => {
-                    noteEditorEl.classList.toggle('hidden');
-                    previewPane.classList.toggle('hidden');
-                    document.getElementById('view-toggle').classList.toggle('active');
-                    noteEditorEl.focus();
-                });
-            };
 
-            // reminder pop up @ startup 
-            const checkRemindersOnStartup = async () => {
-                const dueNotes = await window.electronAPI.getDueReminders();
-                const startupReminderModal = document.getElementById('startup-reminder-modal');
-                const dueRemindersList = document.getElementById('due-reminders-list');
-                if (dueNotes && dueNotes.length > 0) {
-                    dueRemindersList.innerHTML = '';
-                    dueNotes.forEach(note => {
-                        const item = document.createElement('div');
-                        item.className = 'p-2 rounded-md hover:bg-gray-700 cursor-pointer border border-gray-600';
-                        item.innerHTML = `<div class="font-bold">${note.reviewDate}</div><div class="text-sm text-gray-400">${note.title}</div>`;
-                        item.onclick = async () => {
-                            await window.electronAPI.deleteReminder(note.noteDate);
-                            const [year, month, day] = note.noteDate.split('-').map(Number);
-                            await loadNoteForDate(new Date(year, month - 1, day));
-                            startupReminderModal.classList.add('hidden');
-                        };
-                        dueRemindersList.appendChild(item);
-                    });
-                    startupReminderModal.classList.remove('hidden');
-                }
-            };
-            
-            // --- App Initialization & Event Listeners ---
-            const main = async () => {
-                // Electron-specific setup
-                if (typeof window.electronAPI !== 'undefined' && window.electronAPI.minimizeWindow) {
-                    document.getElementById('title-bar-text').textContent = document.title;
-                    document.getElementById('minimize-btn').addEventListener('click', () => window.electronAPI.minimizeWindow());
-                    document.getElementById('maximize-btn').addEventListener('click', () => window.electronAPI.maximizeWindow());
-                    document.getElementById('close-btn').addEventListener('click', () => window.electronAPI.closeWindow());
-                    window.electronAPI.onCapture((text) => { 
-                        noteEditorEl.value += `\n\n---\n${text}`; 
-                        saveCurrentNote(); 
-                        updatePreview(noteEditorEl.value); 
-                    });
-                }
-
-                await loadAndApplySettings();
-                await loadNoteForDate(new Date());
-                setupUIInteractions();
-                await checkRemindersOnStartup();
-                await updateSearchIndex();
-
-                // --- Image Preview Modal Logic ---
-                const imagePreviewModal = document.getElementById('image-preview-modal');
-                const modalImage = document.getElementById('modal-image');
-                const closeImagePreview = document.getElementById('close-image-preview');
-
-                previewPane.addEventListener('dblclick', (e) => {
-                    if (e.target.tagName === 'IMG') {
-                        modalImage.src = e.target.src;
-                        imagePreviewModal.classList.remove('hidden');
-                    }
-                });
-
-                const closePreview = () => {
-                    imagePreviewModal.classList.add('hidden');
-                    modalImage.src = ''; // Clear src to prevent showing old image briefly
+                // --- Utility ---
+                const toISODateString = (date) => {
+                    const year = date.getFullYear();
+                    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                    const day = date.getDate().toString().padStart(2, '0');
+                    return `${year}-${month}-${day}`;
                 };
-                closeImagePreview.addEventListener('click', closePreview);
-                imagePreviewModal.addEventListener('click', (e) => {
-                    // Close only if the backdrop is clicked, not the image itself
-                    if (e.target === imagePreviewModal) {
-                        closePreview();
-                    }
-                });
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape' && !imagePreviewModal.classList.contains('hidden')) {
-                        closePreview();
-                    }
-                });
 
-                // --- Search Listener ---
-                const searchInput = document.getElementById('search-input');
-                const searchResults = document.getElementById('search-results');
+                const wrapSelectedText = (textarea, wrapper) => {
+                    const start = textarea.selectionStart;
+                    const end = textarea.selectionEnd;
+                    const selectedText = textarea.value.substring(start, end);
+                    const newText = `${wrapper}${selectedText}${wrapper}`;
+                    textarea.setRangeText(newText, start, end, 'select');
+                    textarea.selectionStart = start + wrapper.length;
+                    textarea.selectionEnd = end + wrapper.length;
+                    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                };
 
-                searchInput.addEventListener('input', () => {
-                    const query = searchInput.value.trim().toLowerCase();
-                    searchResults.innerHTML = '';
+                // --- Font Settings ---
+                const applyFontSettings = (settings) => {
+                    const fontSize = settings.fontSize || 'base';
+                    const fontFamily = settings.fontFamily || 'mono';
+                    const elementsToStyle = [noteEditorEl, previewPane];
+                    elementsToStyle.forEach(el => {
+                        el.classList.remove('text-sm', 'text-base', 'text-lg', 'font-mono', 'font-sans');
+                        el.classList.add(`text-${fontSize}`, `font-${fontFamily}`);
+                    });
+                    document.getElementById('font-size-select').value = fontSize;
+                    document.getElementById('font-family-select').value = fontFamily;
+                };
 
-                    if (query.length === 0) {
-                        searchResults.classList.add('hidden');
-                        return;
-                    }
-
-                    const matchingTitles = searchableNotes
-                        .filter(note => note.title.toLowerCase().includes(query))
-                        .slice(0, 5);
-
-                    if (matchingTitles.length > 0) {
-                        matchingTitles.forEach(note => {
-                            const resultItem = document.createElement('div');
-                            resultItem.className = 'flex justify-between items-center p-2 hover:bg-gray-700 cursor-pointer text-sm';
-                            
-                            const titleSpan = document.createElement('span');
-                            titleSpan.className = 'truncate';
-                            titleSpan.textContent = note.title;
-                            titleSpan.title = note.title;
-
-                            const dateSpan = document.createElement('span');
-                            dateSpan.className = 'text-xs text-gray-400 pl-4 flex-shrink-0';
-                            dateSpan.textContent = note.dateString;
-
-                            resultItem.appendChild(titleSpan);
-                            resultItem.appendChild(dateSpan);
-                            
-                            resultItem.addEventListener('click', () => {
-                                const [year, month, day] = note.dateString.split('-').map(Number);
-                                loadNoteForDate(new Date(year, month - 1, day));
-                                searchInput.value = '';
-                                searchResults.classList.add('hidden');
-                                noteEditorEl.focus();
-                            });
-                            searchResults.appendChild(resultItem);
-                        });
-                        searchResults.classList.remove('hidden');
-                    } else {
-                        searchResults.classList.add('hidden');
-                    }
-                });
-
-                // Hide results when clicking outside
-                document.addEventListener('click', (event) => {
-                    if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
-                        searchResults.classList.add('hidden');
-                    }
-                });
-                
-                noteEditorEl.addEventListener('input', () => {
-                    saveCurrentNote();
-                    updatePreview(noteEditorEl.value);
-                });
-
-                // --- Event listener for pasting images ---
-                noteEditorEl.addEventListener('paste', async (event) => {
-                    const items = event.clipboardData.items;
-                    let imageFile = null;
-                    for (const item of items) {
-                        if (item.type.startsWith('image/')) {
-                            imageFile = item.getAsFile();
-                            break;
-                        }
-                    }
-
-                    if (imageFile) {
-                        event.preventDefault();
-                        const reader = new FileReader();
-                        reader.onload = async () => {
-                            const buffer = reader.result;
-                            const mimeType = imageFile.type;
-                            const imagePath = await window.electronAPI.savePastedImage({ buffer, mimeType });
-                            if (imagePath) {
-                                const imageMarkdown = `\n![pasted-image](${imagePath.startsWith('data:') ? imagePath : `file://${imagePath.replace(/\\/g, '/')}`})\n`;
-                                const start = noteEditorEl.selectionStart;
-                                const end = noteEditorEl.selectionEnd;
-                                noteEditorEl.setRangeText(imageMarkdown, start, end, 'end');
-                                noteEditorEl.dispatchEvent(new Event('input', { bubbles: true }));
-                            }
-                        };
-                        reader.readAsArrayBuffer(imageFile);
-                    }
-                });
-                
-                // event listener for open file location 
-                document.getElementById('open-file-location-btn').addEventListener('click', () => {
-                    window.electronAPI.openUserDataPath();
-                });
-
-                // event listener for save settings  
-                document.getElementById('save-settings').addEventListener('click', async () => {
-                    userSettings.apiKey = document.getElementById('api-key').value;
-                    userSettings.quizPrompt = document.getElementById('quiz-prompt').value || document.getElementById('quiz-prompt').placeholder;
-                    userSettings.fontSize = document.getElementById('font-size-select').value;
-                    userSettings.fontFamily = document.getElementById('font-family-select').value;
-                    await window.electronAPI.saveSettings(userSettings);
+                // --- Settings ---
+                const loadAndApplySettings = async () => {
+                    userSettings = await window.electronAPI.getSettings();
+                    document.getElementById('api-key').value = userSettings.apiKey;
+                    document.getElementById('quiz-prompt').placeholder = userSettings.quizPrompt;
+                    document.getElementById('quiz-prompt').value = '';
                     applyFontSettings(userSettings);
-                    document.getElementById('settings-modal').classList.add('hidden');
-                    noteEditorEl.focus();
-                });
-                // event listener for deleting notes
-                document.getElementById('confirm-delete').addEventListener('click', async () => {
-                    await window.electronAPI.deleteNote(toISODateString(selectedDate));
-                    document.getElementById('delete-confirm-modal').classList.add('hidden');
-                    await loadNoteForDate(selectedDate);
-                    await updateSearchIndex();
-                    noteEditorEl.focus();
-                });
+                };
 
-                // event listener for reminders
-                document.getElementById('confirm-reminder').addEventListener('click', async () => {
-                    const delayInDays = parseInt(document.getElementById('reminder-time').value, 10);
-                    if (delayInDays > 0) {
-                        await window.electronAPI.setReminder({ noteDate: toISODateString(selectedDate), delayInDays });
-                        document.getElementById('reminder-modal').classList.add('hidden');
-                        await renderCalendar();
-                        noteEditorEl.focus();
-                    } else { alert("Please enter a positive number of days."); }
-                });
-                
-                // event listener for quizzing
-                quizBtn.addEventListener('click', async () => {
-                    const quizDelimiter = "\n\n---\n\n### 🧠 Active Recall Quiz\n";
-                    const currentNoteContent = noteEditorEl.value;
-                    if (currentNoteContent.includes(quizDelimiter)) {
-                        const existingQuiz = currentNoteContent.split(quizDelimiter)[1];
-                        document.getElementById('quiz-content').innerHTML = marked.parse(existingQuiz || '');
-                        document.getElementById('quiz-modal').classList.remove('hidden');
-                        return;
-                    }
-                    if (currentNoteContent.trim().length < 20) return alert("Please write more before generating a quiz.");
-                    if (!userSettings.apiKey) return alert("Please set your Gemini API key in the settings first.");
-                    
-                    const prompt = `${userSettings.quizPrompt}\n\n---\n${currentNoteContent.split(quizDelimiter)[0]}`;
-                    aiLoader.classList.remove('hidden');
-                    quizBtn.disabled = true;
+                // --- Core Logic ---
+                const updatePreview = (markdown) => {
+                    previewPane.innerHTML = marked.parse(markdown || '');
+                    Prism.highlightAllUnder(previewPane);
 
-                    try {
-                        const ai = new GoogleGenAI({ apiKey: userSettings.apiKey });
-                        const response = await ai.models.generateContent({
-                            model: 'gemini-2.5-flash',
-                            contents: prompt,
+                    const codeBlocks = previewPane.querySelectorAll('pre');
+                    codeBlocks.forEach(pre => {
+                        if (pre.querySelector('.copy-code-btn')) return;
+
+                        const button = document.createElement('button');
+                        button.className = 'copy-code-btn';
+                        button.title = 'Copy code';
+                        const copyIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+                        const checkIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+
+                        button.innerHTML = copyIconSVG;
+
+                        button.addEventListener('click', () => {
+                            const code = pre.querySelector('code');
+                            if (code) {
+                                navigator.clipboard.writeText(code.innerText).then(() => {
+                                    button.innerHTML = checkIconSVG;
+                                    setTimeout(() => {
+                                        button.innerHTML = copyIconSVG;
+                                    }, 2000);
+                                }).catch(err => {
+                                    console.error('Failed to copy text: ', err);
+                                });
+                            }
                         });
-                        const quizText = response.text;
 
-                        if (quizText) {
-                            noteEditorEl.value += `${quizDelimiter}${quizText}`;
+                        pre.appendChild(button);
+                    });
+                };
+
+                // load
+                const loadNoteForDate = async (date) => {
+                    selectedDate = date;
+                    currentDate = new Date(date);
+                    noteTitleEl.textContent = date.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+                    const content = await window.electronAPI.loadNote(toISODateString(date));
+                    noteEditorEl.value = content;
+                    updatePreview(content);
+                    await renderCalendar();
+                };
+
+                // save
+                const saveCurrentNote = () => {
+                    clearTimeout(saveTimeout);
+                    saveTimeout = setTimeout(async () => {
+                        await window.electronAPI.saveNote({ dateString: toISODateString(selectedDate), content: noteEditorEl.value });
+                        await renderCalendar();
+                        await updateSearchIndex();
+                    }, 500);
+                };
+
+                // calender
+                const renderCalendar = async () => {
+                    calendarBodyEl.innerHTML = '';
+                    const year = currentDate.getFullYear();
+                    const month = currentDate.getMonth();
+                    monthYearEl.textContent = `${currentDate.toLocaleString('default', { month: 'long' })} ${year}`;
+                    const [notesInMonth, reminders] = await Promise.all([
+                        window.electronAPI.getNotesForMonth({ year, month }),
+                        window.electronAPI.getRemindersForMonth({ year, month })
+                    ]);
+                    const reminderNoteDates = Object.keys(reminders);
+                    const firstDayOfMonth = new Date(year, month, 1).getDay();
+                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+                    for (let i = 0; i < firstDayOfMonth; i++) { calendarBodyEl.appendChild(document.createElement('div')); }
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const cellDate = new Date(year, month, day);
+                        const isoDate = toISODateString(cellDate);
+                        const dayEl = document.createElement('div');
+                        dayEl.className = 'calendar-day cursor-pointer';
+                        if (isoDate === toISODateString(selectedDate)) dayEl.classList.add('selected');
+                        if (reminderNoteDates.includes(isoDate)) {
+                            const dot = document.createElement('div');
+                            dot.className = 'reminder-dot';
+                            dot.title = `Reminder set for ${reminders[isoDate]}`;
+                            dayEl.appendChild(dot);
+                        }
+                        const dayNumber = document.createElement('div');
+                        dayNumber.className = 'day-number';
+                        dayNumber.textContent = day;
+                        if (isoDate === toISODateString(new Date())) dayNumber.classList.add('today');
+                        dayEl.appendChild(dayNumber);
+                        if (notesInMonth.includes(isoDate)) {
+                            const titleEl = document.createElement('div');
+                            titleEl.className = 'note-title';
+                            titleEl.textContent = '';
+                            dayEl.appendChild(titleEl);
+                            window.electronAPI.getNoteTitle(isoDate).then(title => {
+                                if (title) titleEl.textContent = title;
+                            });
+                        }
+                        dayEl.onclick = () => loadNoteForDate(cellDate);
+                        calendarBodyEl.appendChild(dayEl);
+                    }
+                };
+
+                // ui toggle for modals 
+                const setupUIInteractions = () => {
+                    const modals = {
+                        settings: { btn: document.getElementById('settings-btn'), modal: document.getElementById('settings-modal'), cancel: document.getElementById('cancel-settings') },
+                        quiz: { modal: document.getElementById('quiz-modal'), cancel: document.getElementById('close-quiz-modal') },
+                        info: { btn: document.getElementById('info-btn'), modal: document.getElementById('info-modal'), cancel: document.getElementById('close-info-modal') },
+                        reminder: { btn: document.getElementById('reminder-btn'), modal: document.getElementById('reminder-modal'), cancel: document.getElementById('cancel-reminder') },
+                        delete: { btn: document.getElementById('delete-btn'), modal: document.getElementById('delete-confirm-modal'), cancel: document.getElementById('cancel-delete') }
+                    };
+                    for (const key in modals) {
+                        const { btn, modal, cancel } = modals[key];
+                        if (btn) btn.addEventListener('click', () => modal.classList.remove('hidden'));
+                        cancel.addEventListener('click', () => {
+                            modal.classList.add('hidden');
+                            noteEditorEl.focus();
+                        });
+                    }
+                    toggleCalendarBtn.addEventListener('click', () => {
+                        const isHidden = leftPanel.classList.toggle('hidden');
+                        leftPanel.classList.toggle('w-1/3', !isHidden);
+                        leftPanel.classList.toggle('w-0', isHidden);
+                        leftPanel.classList.toggle('p-4', !isHidden);
+                        leftPanel.classList.toggle('p-0', isHidden);
+                        leftPanel.classList.toggle('border-r', !isHidden);
+                        leftPanel.classList.toggle('opacity-0', isHidden);
+
+                        rightPanel.classList.toggle('w-2/3', !isHidden);
+                        rightPanel.classList.toggle('w-full', isHidden);
+                        toggleCalendarBtn.classList.toggle('active', !isHidden);
+                    });
+                    document.getElementById('view-toggle').addEventListener('click', () => {
+                        noteEditorEl.classList.toggle('hidden');
+                        previewPane.classList.toggle('hidden');
+                        document.getElementById('view-toggle').classList.toggle('active');
+                        noteEditorEl.focus();
+                    });
+                };
+
+                // reminder pop up @ startup 
+                const checkRemindersOnStartup = async () => {
+                    const dueNotes = await window.electronAPI.getDueReminders();
+                    const startupReminderModal = document.getElementById('startup-reminder-modal');
+                    const dueRemindersList = document.getElementById('due-reminders-list');
+                    if (dueNotes && dueNotes.length > 0) {
+                        dueRemindersList.innerHTML = '';
+                        dueNotes.forEach(note => {
+                            const item = document.createElement('div');
+                            item.className = 'p-2 rounded-md hover:bg-gray-700 cursor-pointer border border-gray-600';
+                            item.innerHTML = `<div class="font-bold">${note.reviewDate}</div><div class="text-sm text-gray-400">${note.title}</div>`;
+                            item.onclick = async () => {
+                                await window.electronAPI.deleteReminder(note.noteDate);
+                                const [year, month, day] = note.noteDate.split('-').map(Number);
+                                await loadNoteForDate(new Date(year, month - 1, day));
+                                startupReminderModal.classList.add('hidden');
+                            };
+                            dueRemindersList.appendChild(item);
+                        });
+                        startupReminderModal.classList.remove('hidden');
+                    }
+                };
+
+                // --- App Initialization & Event Listeners ---
+                const main = async () => {
+                    // Electron-specific setup
+                    if (typeof window.electronAPI !== 'undefined' && window.electronAPI.minimizeWindow) {
+                        document.getElementById('title-bar-text').textContent = document.title;
+                        document.getElementById('minimize-btn').addEventListener('click', () => window.electronAPI.minimizeWindow());
+                        document.getElementById('maximize-btn').addEventListener('click', () => window.electronAPI.maximizeWindow());
+                        document.getElementById('close-btn').addEventListener('click', () => window.electronAPI.closeWindow());
+                        window.electronAPI.onCapture((text) => {
+                            noteEditorEl.value += `\n\n---\n${text}`;
                             saveCurrentNote();
                             updatePreview(noteEditorEl.value);
-                            document.getElementById('quiz-content').innerHTML = marked.parse(quizText);
-                            document.getElementById('quiz-modal').classList.remove('hidden');
-                        } else { alert("Sorry, I couldn't generate a quiz."); }
-                    } catch (error) {
-                        console.error("Gemini API call failed:", error);
-                        alert(`Error generating quiz: ${error.message}`);
-                    } finally {
-                        aiLoader.classList.add('hidden');
-                        quizBtn.disabled = false;
-                        noteEditorEl.focus();
+                        });
                     }
-                });
 
-                // event listener for jumping to current day 
-                jumpTodayBtn.addEventListener('click', () => {
-                    loadNoteForDate(new Date());
-                });
+                    await loadAndApplySettings();
 
-                //
-                document.getElementById('close-startup-reminder').addEventListener('click', () => {
-                    document.getElementById('startup-reminder-modal').classList.add('hidden');
-                });
-                
-                // calender nav 
-                prevMonthBtn.addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); });
-                nextMonthBtn.addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); });
-            
+                    // Get base images path for rendering
+                    if (window.electronAPI.getImagesPath) {
+                        imagesBasePath = await window.electronAPI.getImagesPath();
+                        // Normalize path separators if needed (though electron paths usually work fine)
+                        imagesBasePath = imagesBasePath.replace(/\\/g, '/');
+                    }
 
-                // event listener for markdown shortcuts 
-                document.addEventListener('keydown', (e) => {
-                    if (e.ctrlKey && document.activeElement === noteEditorEl) {
-                        let handled = true;
-                        switch (e.key.toLowerCase()) {
-                            case 'b':
-                                wrapSelectedText(noteEditorEl, '**');
-                                break;
-                            case 'i':
-                                wrapSelectedText(noteEditorEl, '*');
-                                break;
-                            case 'u':
-                                wrapSelectedText(noteEditorEl, '++');
-                                break;
-                            case 'h':
-                                wrapSelectedText(noteEditorEl, '==');
-                                break;
-                             case 'k':
-                                wrapSelectedText(noteEditorEl, '`');
-                                break;
-                            case 't': {
-                                const textarea = noteEditorEl;
-                                const start = textarea.selectionStart;
-                                const end = textarea.selectionEnd;
-                                const value = textarea.value;
+                    await loadNoteForDate(new Date());
+                    setupUIInteractions();
+                    await checkRemindersOnStartup();
+                    await updateSearchIndex();
 
-                                if (start === end) {
-                                    const lineStart = value.lastIndexOf('\n', start - 1) + 1;
-                                    textarea.setRangeText('- [ ] ', lineStart, lineStart, 'end');
-                                } else {
-                                    const selectedText = value.substring(start, end);
-                                    const newText = selectedText.split('\n').map(line => (line.trim() ? `- [ ] ${line}` : line)).join('\n');
-                                    textarea.setRangeText(newText, start, end, 'select');
-                                }
-                                textarea.dispatchEvent(new Event('input', { bubbles: true }));
-                                break;
-                            }
-                            default:
-                                handled = false;
-                                break;
+                    // --- Image Preview Modal Logic ---
+                    const imagePreviewModal = document.getElementById('image-preview-modal');
+                    const modalImage = document.getElementById('modal-image');
+                    const closeImagePreview = document.getElementById('close-image-preview');
+
+                    previewPane.addEventListener('dblclick', (e) => {
+                        if (e.target.tagName === 'IMG') {
+                            modalImage.src = e.target.src;
+                            imagePreviewModal.classList.remove('hidden');
                         }
-                        if (handled) {
-                            e.preventDefault();
+                    });
+
+                    const closePreview = () => {
+                        imagePreviewModal.classList.add('hidden');
+                        modalImage.src = ''; // Clear src to prevent showing old image briefly
+                    };
+                    closeImagePreview.addEventListener('click', closePreview);
+                    imagePreviewModal.addEventListener('click', (e) => {
+                        // Close only if the backdrop is clicked, not the image itself
+                        if (e.target === imagePreviewModal) {
+                            closePreview();
+                        }
+                    });
+                    document.addEventListener('keydown', (e) => {
+                        if (e.key === 'Escape' && !imagePreviewModal.classList.contains('hidden')) {
+                            closePreview();
+                        }
+                    });
+
+                    // --- Search Listener ---
+                    const searchInput = document.getElementById('search-input');
+                    const searchResults = document.getElementById('search-results');
+
+                    searchInput.addEventListener('input', () => {
+                        const query = searchInput.value.trim().toLowerCase();
+                        searchResults.innerHTML = '';
+
+                        if (query.length === 0) {
+                            searchResults.classList.add('hidden');
                             return;
                         }
-                    }
-                    if (e.ctrlKey && e.key.toLowerCase() === 'p') {
-                        e.preventDefault();
-                        document.getElementById('view-toggle').click();
-                    }
-                });     
-            };
-            main().catch(console.error);
-        });
-    </script>
+
+                        const matchingTitles = searchableNotes
+                            .filter(note => note.title.toLowerCase().includes(query))
+                            .slice(0, 5);
+
+                        if (matchingTitles.length > 0) {
+                            matchingTitles.forEach(note => {
+                                const resultItem = document.createElement('div');
+                                resultItem.className = 'flex justify-between items-center p-2 hover:bg-gray-700 cursor-pointer text-sm';
+
+                                const titleSpan = document.createElement('span');
+                                titleSpan.className = 'truncate';
+                                titleSpan.textContent = note.title;
+                                titleSpan.title = note.title;
+
+                                const dateSpan = document.createElement('span');
+                                dateSpan.className = 'text-xs text-gray-400 pl-4 flex-shrink-0';
+                                dateSpan.textContent = note.dateString;
+
+                                resultItem.appendChild(titleSpan);
+                                resultItem.appendChild(dateSpan);
+
+                                resultItem.addEventListener('click', () => {
+                                    const [year, month, day] = note.dateString.split('-').map(Number);
+                                    loadNoteForDate(new Date(year, month - 1, day));
+                                    searchInput.value = '';
+                                    searchResults.classList.add('hidden');
+                                    noteEditorEl.focus();
+                                });
+                                searchResults.appendChild(resultItem);
+                            });
+                            searchResults.classList.remove('hidden');
+                        } else {
+                            searchResults.classList.add('hidden');
+                        }
+                    });
+
+                    // Hide results when clicking outside
+                    document.addEventListener('click', (event) => {
+                        if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
+                            searchResults.classList.add('hidden');
+                        }
+                    });
+
+                    noteEditorEl.addEventListener('input', () => {
+                        saveCurrentNote();
+                        updatePreview(noteEditorEl.value);
+                    });
+
+                    // --- Event listener for pasting images ---
+                    noteEditorEl.addEventListener('paste', async (event) => {
+                        const items = event.clipboardData.items;
+                        let imageFile = null;
+                        for (const item of items) {
+                            if (item.type.startsWith('image/')) {
+                                imageFile = item.getAsFile();
+                                break;
+                            }
+                        }
+
+                        if (imageFile) {
+                            event.preventDefault();
+                            const reader = new FileReader();
+                            reader.onload = async () => {
+                                const buffer = reader.result;
+                                const mimeType = imageFile.type;
+                                const fileName = await window.electronAPI.savePastedImage({ buffer, mimeType });
+                                if (fileName) {
+                                    // Save as relative path for cross-compatibility
+                                    const imageMarkdown = `\n![pasted-image](../images/${fileName})\n`;
+                                    const start = noteEditorEl.selectionStart;
+                                    const end = noteEditorEl.selectionEnd;
+                                    noteEditorEl.setRangeText(imageMarkdown, start, end, 'end');
+                                    noteEditorEl.dispatchEvent(new Event('input', { bubbles: true }));
+                                }
+                            };
+                            reader.readAsArrayBuffer(imageFile);
+                        }
+                    });
+
+                    // event listener for open file location 
+                    document.getElementById('open-file-location-btn').addEventListener('click', () => {
+                        window.electronAPI.openUserDataPath();
+                    });
+
+                    // event listener for save settings  
+                    document.getElementById('save-settings').addEventListener('click', async () => {
+                        userSettings.apiKey = document.getElementById('api-key').value;
+                        userSettings.quizPrompt = document.getElementById('quiz-prompt').value || document.getElementById('quiz-prompt').placeholder;
+                        userSettings.fontSize = document.getElementById('font-size-select').value;
+                        userSettings.fontFamily = document.getElementById('font-family-select').value;
+                        await window.electronAPI.saveSettings(userSettings);
+                        applyFontSettings(userSettings);
+                        document.getElementById('settings-modal').classList.add('hidden');
+                        noteEditorEl.focus();
+                    });
+                    // event listener for deleting notes
+                    document.getElementById('confirm-delete').addEventListener('click', async () => {
+                        await window.electronAPI.deleteNote(toISODateString(selectedDate));
+                        document.getElementById('delete-confirm-modal').classList.add('hidden');
+                        await loadNoteForDate(selectedDate);
+                        await updateSearchIndex();
+                        noteEditorEl.focus();
+                    });
+
+                    // event listener for reminders
+                    document.getElementById('confirm-reminder').addEventListener('click', async () => {
+                        const delayInDays = parseInt(document.getElementById('reminder-time').value, 10);
+                        if (delayInDays > 0) {
+                            await window.electronAPI.setReminder({ noteDate: toISODateString(selectedDate), delayInDays });
+                            document.getElementById('reminder-modal').classList.add('hidden');
+                            await renderCalendar();
+                            noteEditorEl.focus();
+                        } else { alert("Please enter a positive number of days."); }
+                    });
+
+                    // event listener for quizzing
+                    quizBtn.addEventListener('click', async () => {
+                        const quizDelimiter = "\n\n---\n\n### 🧠 Active Recall Quiz\n";
+                        const currentNoteContent = noteEditorEl.value;
+                        if (currentNoteContent.includes(quizDelimiter)) {
+                            const existingQuiz = currentNoteContent.split(quizDelimiter)[1];
+                            document.getElementById('quiz-content').innerHTML = marked.parse(existingQuiz || '');
+                            document.getElementById('quiz-modal').classList.remove('hidden');
+                            return;
+                        }
+                        if (currentNoteContent.trim().length < 20) return alert("Please write more before generating a quiz.");
+                        if (!userSettings.apiKey) return alert("Please set your Gemini API key in the settings first.");
+
+                        const prompt = `${userSettings.quizPrompt}\n\n---\n${currentNoteContent.split(quizDelimiter)[0]}`;
+                        aiLoader.classList.remove('hidden');
+                        quizBtn.disabled = true;
+
+                        try {
+                            const ai = new GoogleGenAI({ apiKey: userSettings.apiKey });
+                            const response = await ai.models.generateContent({
+                                model: 'gemini-2.5-flash',
+                                contents: prompt,
+                            });
+                            const quizText = response.text;
+
+                            if (quizText) {
+                                noteEditorEl.value += `${quizDelimiter}${quizText}`;
+                                saveCurrentNote();
+                                updatePreview(noteEditorEl.value);
+                                document.getElementById('quiz-content').innerHTML = marked.parse(quizText);
+                                document.getElementById('quiz-modal').classList.remove('hidden');
+                            } else { alert("Sorry, I couldn't generate a quiz."); }
+                        } catch (error) {
+                            console.error("Gemini API call failed:", error);
+                            alert(`Error generating quiz: ${error.message}`);
+                        } finally {
+                            aiLoader.classList.add('hidden');
+                            quizBtn.disabled = false;
+                            noteEditorEl.focus();
+                        }
+                    });
+
+                    // event listener for jumping to current day 
+                    jumpTodayBtn.addEventListener('click', () => {
+                        loadNoteForDate(new Date());
+                    });
+
+                    //
+                    document.getElementById('close-startup-reminder').addEventListener('click', () => {
+                        document.getElementById('startup-reminder-modal').classList.add('hidden');
+                    });
+
+                    // calender nav 
+                    prevMonthBtn.addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); });
+                    nextMonthBtn.addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); });
+
+
+                    // event listener for markdown shortcuts 
+                    document.addEventListener('keydown', (e) => {
+                        // [NEW] Tab key support for indentation
+                        if (e.key === 'Tab' && document.activeElement === noteEditorEl) {
+                            e.preventDefault();
+                            const start = noteEditorEl.selectionStart;
+                            const end = noteEditorEl.selectionEnd;
+                            // Insert 4 spaces
+                            noteEditorEl.setRangeText('    ', start, end, 'end');
+                            // Trigger input event to update preview/save
+                            noteEditorEl.dispatchEvent(new Event('input', { bubbles: true }));
+                            return;
+                        }
+
+                        if (e.ctrlKey && document.activeElement === noteEditorEl) {
+                            let handled = true;
+                            switch (e.key.toLowerCase()) {
+                                case 'b':
+                                    wrapSelectedText(noteEditorEl, '**');
+                                    break;
+                                case 'i':
+                                    wrapSelectedText(noteEditorEl, '*');
+                                    break;
+                                case 'u':
+                                    wrapSelectedText(noteEditorEl, '++');
+                                    break;
+                                case 'h':
+                                    wrapSelectedText(noteEditorEl, '==');
+                                    break;
+                                case 'k':
+                                    wrapSelectedText(noteEditorEl, '`');
+                                    break;
+                                case 't': {
+                                    const textarea = noteEditorEl;
+                                    const start = textarea.selectionStart;
+                                    const end = textarea.selectionEnd;
+                                    const value = textarea.value;
+
+                                    if (start === end) {
+                                        const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+                                        textarea.setRangeText('- [ ] ', lineStart, lineStart, 'end');
+                                    } else {
+                                        const selectedText = value.substring(start, end);
+                                        const newText = selectedText.split('\n').map(line => (line.trim() ? `- [ ] ${line}` : line)).join('\n');
+                                        textarea.setRangeText(newText, start, end, 'select');
+                                    }
+                                    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                                    break;
+                                }
+                                default:
+                                    handled = false;
+                                    break;
+                            }
+                            if (handled) {
+                                e.preventDefault();
+                                return;
+                            }
+                        }
+                        if (e.ctrlKey && e.key.toLowerCase() === 'p') {
+                            e.preventDefault();
+                            document.getElementById('view-toggle').click();
+                        }
+                    });
+                };
+                main().catch(console.error);
+            });
+        </script>
 </body>
+
 </html>

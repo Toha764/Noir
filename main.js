@@ -66,13 +66,13 @@ function createWindow() {
         height: 800,
         minWidth: 900,
         minHeight: 600,
-        icon: path.join(__dirname, 'noir_app_icon.png'),
+        icon: path.join(__dirname, 'noir_app_icon.jpg'),
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
             nodeIntegration: false,
         },
-        frame: false, 
+        frame: false,
         titleBarStyle: 'hidden',
         trafficLightPosition: { x: 15, y: 15 },
     });
@@ -101,7 +101,7 @@ app.whenReady().then(() => {
         }
     });
     ipcMain.on('window-close', () => mainWindow.close());
-    
+
     // opening path of images 
     ipcMain.on('open-user-data-path', () => {
         shell.openPath(userDataPath);
@@ -114,12 +114,14 @@ app.whenReady().then(() => {
             const fileName = `${crypto.randomUUID()}.${extension}`;
             const filePath = path.join(imagesPath, fileName);
             fs.writeFileSync(filePath, Buffer.from(buffer));
-            return filePath; 
+            return fileName;
         } catch (error) {
             console.error('Failed to save image:', error);
             return null;
         }
     });
+
+    ipcMain.handle('get-images-path', () => imagesPath);
 
     // --- [NEW] Handler to get all note content for client-side search ---
     ipcMain.handle('get-all-notes', () => {
@@ -139,7 +141,7 @@ app.whenReady().then(() => {
         }
         return notes;
     });
-    
+
 
     // --- Other IPC Handlers ---
     ipcMain.handle('get-settings', () => getSettings());
@@ -160,7 +162,7 @@ app.whenReady().then(() => {
             fs.unlinkSync(filePath);
         }
         const reminders = getReminders();
-        if(reminders[dateString]) {
+        if (reminders[dateString]) {
             delete reminders[dateString];
             saveReminders(reminders);
         }
@@ -198,7 +200,7 @@ app.whenReady().then(() => {
         const reviewDate = new Date();
         reviewDate.setDate(reviewDate.getDate() + delayInDays);
         const reviewDateString = reviewDate.toISOString().split('T')[0];
-        
+
         reminders[noteDate] = reviewDateString;
         saveReminders(reminders);
         return { success: true, message: 'Reminder set!' };
@@ -216,13 +218,13 @@ app.whenReady().then(() => {
         const dueNotes = [];
         for (const noteDate in reminders) {
             if (reminders[noteDate] <= today) {
-                 const filePath = path.join(notesPath, `${noteDate}.md`);
-                 let title = 'Untitled Note';
-                 if (fs.existsSync(filePath)) {
+                const filePath = path.join(notesPath, `${noteDate}.md`);
+                let title = 'Untitled Note';
+                if (fs.existsSync(filePath)) {
                     const content = fs.readFileSync(filePath, 'utf-8');
                     title = content.split('\n')[0].replace(/^#+\s*/, '').trim() || 'Untitled Note';
-                 }
-                 dueNotes.push({ noteDate, reviewDate: reminders[noteDate], title });
+                }
+                dueNotes.push({ noteDate, reviewDate: reminders[noteDate], title });
             }
         }
         return dueNotes;
